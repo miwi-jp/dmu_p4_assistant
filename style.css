@@ -15,6 +15,8 @@
   --fire: #ff8a3d;
   --tsunami: #38c7d6;
   --accel: #f2c94c;
+  --fire-bg: #3a1f24;
+  --tsunami-bg: #1c2b40;
 
   --radius: 8px;
   color-scheme: dark;
@@ -170,8 +172,11 @@ main,
   gap: 6px;
   padding: 4px 8px;
 }
-/* セクションの区切りは、背景色を交互に濃淡させて表す */
-.ev:nth-child(even) { background: var(--surface); }
+/* セクションの区切りは細い線。③⑥だけ背景に色を付ける */
+.ev + .ev { border-top: 1px solid var(--surface-2); }
+/* ほのお（赤っぽい）・つなみ（青っぽい）は、交互の濃淡より優先して背景に色を付ける */
+.ev.ev-fire    { background: var(--fire-bg); }
+.ev.ev-tsunami { background: var(--tsunami-bg); }
 /* 丸の中に数字。ラベル・結果の1行目と中心の高さを合わせる */
 .ev-no {
   display: grid;

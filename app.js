@@ -282,8 +282,9 @@ function inputLine(lbl, path) {
   return `<div class="line">${lbl}<div class="mini">${choice(path, true, '真', 'true')}${choice(path, false, '偽', 'false')}</div></div>`;
 }
 
-function event(no, lines) {
-  return `<section class="ev"><span class="ev-no">${no}</span><div class="ev-lines">${lines}</div></section>`;
+// tint：背景に色を付ける場合の種類（'fire' | 'tsunami'）
+function event(no, lines, tint) {
+  return `<section class="ev${tint ? ` ev-${tint}` : ''}"><span class="ev-no">${no}</span><div class="ev-lines">${lines}</div></section>`;
 }
 
 const stepText = (value) => (value === null ? '' : judgeStep(value));
@@ -316,13 +317,13 @@ function renderExec() {
       ${event(1, resultLine(early.lbl, early.parts))}
       ${event(2, resultLine(label('視線'), [judgeGaze(gc1.truth), stepText(exec.thunder)]) +
         inputLine(label('⚡'), 'exec.thunder'))}
-      ${event(3, resultLine(label(ELEM_NAME.fire, 'fire'), [elemText('fire', fireTruth)]))}
+      ${event(3, resultLine(label(ELEM_NAME.fire), [elemText('fire', fireTruth)]), 'fire')}
       ${event(4, resultLine(late.lbl, [...late.parts, stepText(exec.ice)]) +
         inputLine(label('⛄'), 'exec.ice'))}
       ${event(5, resultLine(label('視線'), [judgeGaze(gc2.truth)]) +
         inputLine(label('⚡'), 'exec.moThunder') +
         inputLine(label('⛄'), 'exec.moIce'))}
-      ${event(6, resultLine(label(ELEM_NAME.tsunami, 'tsunami'), [elemText('tsunami', tsunamiTruth), magicOutText()]))}
+      ${event(6, resultLine(label(ELEM_NAME.tsunami), [elemText('tsunami', tsunamiTruth), magicOutText()]), 'tsunami')}
     </div>
   `;
 }
