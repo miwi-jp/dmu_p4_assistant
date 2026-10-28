@@ -4,7 +4,7 @@
 
 const STORAGE_KEY = 'dmu-p4-assistant-v2';
 const SCREEN_LABELS = ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'];
-const LAST_INPUT_SCREEN = 3;
+const AUTO_ADVANCE_SCREENS = [1, 3]; // ほ・つ①②
 const EXEC_SCREEN = 4;
 
 const WT_NAME = { water: '水', thunder: '雷' };
@@ -43,8 +43,8 @@ function judgeMagicOut(thunderPrev, thunderNow, icePrev, iceNow) {
 function initialState() {
   return {
     screen: 0,
-    // wt: 'water' | 'thunder' | null、none: 「なし」を選んだか
-    gc1: { truth: null, wt: null, accel: false, none: false, timing: null },
+    // wt: 'water' | 'thunder' | null（水雷も加速度も選ばなければ「なし」）
+    gc1: { truth: null, wt: null, accel: false, timing: null },
     elem1: { truth: null, type: null },
     gc2: { truth: null, wt: null, timing: null },
     elem2: { truth: null },
@@ -66,36 +66,21 @@ function save() {
 
 let state = load();
 
-// GC①のデバフ（未選択なら null）
-function gc1Option() {
-  const { wt, accel, none } = state.gc1;
-  if (!wt && !accel && !none) return null;
-  return { wt, accel };
-}
-
 // GC①で水雷が付かなかった人だけ、GC②で水雷を選ぶ
-function gc2NeedsWT() {
-  const o = gc1Option();
-  return !!o && !o.wt;
-}
+const gc2NeedsWT = () => !state.gc1.wt;
 
 // 加速度はGC①かGC②のどちらか一方
-function gc2HasAccel() {
-  const o = gc1Option();
-  return !!o && !o.accel;
-}
+const gc2HasAccel = () => !state.gc1.accel;
 
 const elem2Type = () => (state.elem1.type === 'fire' ? 'tsunami' : 'fire');
 
 function isComplete(screen) {
   const { gc1, elem1, gc2, elem2 } = state;
   switch (screen) {
-    case 0: {
-      const o = gc1Option();
-      return gc1.truth !== null && !!o && (!o.wt || gc1.timing !== null);
-    }
+    // 真偽を選べば進める。水か雷を選んだときは早遅も必須
+    case 0: return gc1.truth !== null && (!gc1.wt || gc1.timing !== null);
     case 1: return elem1.truth !== null && elem1.type !== null;
-    case 2: return gc2.truth !== null && (!gc2NeedsWT() || (gc2.wt !== null && gc2.timing !== null));
+    case 2: return gc2.truth !== null && (!gc2NeedsWT() || !gc2.wt || gc2.timing !== null);
     case 3: return elem2.truth !== null;
     default: return true;
   }
@@ -103,9 +88,8 @@ function isComplete(screen) {
 
 // 指定タイミング（早/遅）で処理する水雷
 function wtAt(timing) {
-  const o = gc1Option();
-  if (o && o.wt && state.gc1.timing === timing) {
-    return { kind: o.wt, truth: state.gc1.truth };
+  if (state.gc1.wt && state.gc1.timing === timing) {
+    return { kind: state.gc1.wt, truth: state.gc1.truth };
   }
   if (gc2NeedsWT() && state.gc2.wt && state.gc2.timing === timing) {
     return { kind: state.gc2.wt, truth: state.gc2.truth };
@@ -114,9 +98,7 @@ function wtAt(timing) {
 }
 
 function accelSource() {
-  const o = gc1Option();
-  if (!o) return null;
-  return o.accel ? { truth: state.gc1.truth } : { truth: state.gc2.truth };
+  return state.gc1.accel ? { truth: state.gc1.truth } : { truth: state.gc2.truth };
 }
 
 // ===== 操作 =====
@@ -128,29 +110,29 @@ function setValue(path, raw) {
   const value = raw === 'true' ? true : raw === 'false' ? false : raw;
   const [group, key] = path.split('.');
   const wasComplete = isComplete(state.screen);
-  state[group][key] = value;
+  // GC②の水雷は、選択中のボタンをもう一度押すと解除できる
+  if (path === 'gc2.wt' && state.gc2.wt === value) {
+    state.gc2.wt = null;
+    state.gc2.timing = null;
+  } else {
+    state[group][key] = value;
+  }
   save();
   render();
 
   // このタップで入力がそろったときだけ自動で進む（戻って直す場合は「次へ」で進む）
-  // ①は加速度を後から足せるので自動では進まない
+  // GC①②は真偽だけでも進めるので、自動では進まない（「次へ」で進む）
   clearTimeout(advanceTimer);
-  if (state.screen > 0 && state.screen <= LAST_INPUT_SCREEN && !wasComplete && isComplete(state.screen)) {
+  if (AUTO_ADVANCE_SCREENS.includes(state.screen) && !wasComplete && isComplete(state.screen)) {
     advanceTimer = setTimeout(() => goTo(state.screen + 1), 180);
   }
 }
 
-// 水と雷はどちらか一方、加速度は水雷と併用可、なしは他を全解除
+// 水と雷はどちらか一方、加速度は水雷と併用可。もう一度押すと解除
 function toggleGC1(item) {
   const gc1 = state.gc1;
-  if (item === 'none') {
-    gc1.none = !gc1.none;
-    if (gc1.none) { gc1.wt = null; gc1.accel = false; }
-  } else {
-    gc1.none = false;
-    if (item === 'accel') gc1.accel = !gc1.accel;
-    else gc1.wt = gc1.wt === item ? null : item;
-  }
+  if (item === 'accel') gc1.accel = !gc1.accel;
+  else gc1.wt = gc1.wt === item ? null : item;
   if (!gc1.wt) gc1.timing = null;
   if (gc1.wt) { state.gc2.wt = null; state.gc2.timing = null; }
   save();
@@ -207,10 +189,11 @@ const truthChoices = (path) =>
   `<div class="choices">${choice(path, true, '真', 'true')}${choice(path, false, '偽', 'false')}</div>`;
 
 const group = (label, body) =>
-  `<div class="group"><div class="group-label">${label}</div>${body}</div>`;
+  `<div class="group">${label ? `<div class="group-label">${label}</div>` : ''}${body}</div>`;
 
-const timingChoices = (path) =>
-  `<div class="choices">${choice(path, 'early', '早', 'plain', '50')}${choice(path, 'late', '遅', 'plain', '1m')}</div>`;
+// earlySec / lateSec：デバフアイコンに表示される秒数（GC①は 50／1m、GC②は 35／59）
+const timingChoices = (path, earlySec, lateSec) =>
+  `<div class="choices">${choice(path, 'early', '早', 'plain', earlySec)}${choice(path, 'late', '遅', 'plain', lateSec)}</div>`;
 
 function navButtons() {
   const back = state.screen > 0
@@ -224,18 +207,16 @@ function gc1Toggle(item, label, color, selected) {
 }
 
 function renderGC1() {
-  const { wt, accel, none } = state.gc1;
+  const { wt, accel } = state.gc1;
   return `
     <h2 class="screen-title">GC①（グランドクロス1回目）</h2>
     <p class="screen-note">真偽と、自分に付いたデバフを選んで「次へ」。水か雷と加速度は両方選べます。</p>
-    ${group('真偽', truthChoices('gc1.truth'))}
-    ${group('自分のデバフ', `<div class="choices">
+    ${group('', truthChoices('gc1.truth'))}
+    ${group('', `<div class="choices">
       ${gc1Toggle('water', '水', 'water', wt === 'water')}
       ${gc1Toggle('thunder', '雷', 'thunder', wt === 'thunder')}
-      ${gc1Toggle('accel', '加速度', 'accel', accel)}
-      ${gc1Toggle('none', 'なし', 'plain', none)}
-    </div>`)}
-    ${wt ? group(`${WT_NAME[wt]}の早遅`, timingChoices('gc1.timing')) : ''}
+    </div>${wt ? timingChoices('gc1.timing', '50', '1m') : ''}`)}
+    ${group('', `<div class="choices cols-1">${gc1Toggle('accel', '加速度', 'accel', accel)}</div>`)}
     ${nextButton()}
   `;
 }
@@ -253,8 +234,8 @@ function renderElem1() {
   return `
     <h2 class="screen-title">ほのお／つなみ①</h2>
     <p class="screen-note">種類と真偽を選んでください。</p>
-    ${group('真偽', truthChoices('elem1.truth'))}
-    ${group('種類', `<div class="choices">${choice('elem1.type', 'fire', 'ほのお', 'fire')}${choice('elem1.type', 'tsunami', 'つなみ', 'tsunami')}</div>`)}
+    ${group('', truthChoices('elem1.truth'))}
+    ${group('', `<div class="choices">${choice('elem1.type', 'fire', 'ほのお', 'fire')}${choice('elem1.type', 'tsunami', 'つなみ', 'tsunami')}</div>`)}
     ${nextButton()}
   `;
 }
@@ -262,18 +243,12 @@ function renderElem1() {
 function renderGC2() {
   const needsWT = gc2NeedsWT();
   const hasAccel = gc2HasAccel();
-  // 加速度・なしはGC①から決まるので、押せない選択済みボタンで表示する
-  const debuffs = [
-    needsWT ? `<div class="choices">${choice('gc2.wt', 'water', '水', 'water')}${choice('gc2.wt', 'thunder', '雷', 'thunder')}</div>` : '',
-    hasAccel ? fixedButton('加速度', 'accel') : '',
-    !needsWT && !hasAccel ? fixedButton('なし', 'plain') : '',
-  ].join('');
-
+  // 加速度はGC①から決まるので、押せない選択済みボタンで表示する
   return `
     <h2 class="screen-title">GC②（グランドクロス2回目）</h2>
-    ${group('真偽', truthChoices('gc2.truth'))}
-    ${group('自分のデバフ', debuffs)}
-    ${needsWT && state.gc2.wt ? group(`${WT_NAME[state.gc2.wt]}の早遅`, timingChoices('gc2.timing')) : ''}
+    ${group('', truthChoices('gc2.truth'))}
+    ${needsWT ? group('',`<div class="choices">${choice('gc2.wt', 'water', '水', 'water')}${choice('gc2.wt', 'thunder', '雷', 'thunder')}</div>${state.gc2.wt ? timingChoices('gc2.timing', '35', '59') : ''}`) : ''}
+    ${hasAccel ? group('', fixedButton('加速度', 'accel')) : ''}
     ${nextButton()}
   `;
 }
@@ -282,8 +257,8 @@ function renderElem2() {
   const type = elem2Type();
   return `
     <h2 class="screen-title">ほのお／つなみ②</h2>
-    ${group('真偽', truthChoices('elem2.truth'))}
-    ${group('種類', fixedButton(ELEM_NAME[type], type))}
+    ${group('', truthChoices('elem2.truth'))}
+    ${group('', fixedButton(ELEM_NAME[type], type))}
     ${nextButton()}
   `;
 }
