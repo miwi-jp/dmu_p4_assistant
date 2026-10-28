@@ -168,15 +168,21 @@ main,
   grid-template-columns: 1.4em 1fr;
   align-items: start;
   gap: 6px;
-  padding: 4px 0;
-  border-top: 1px solid var(--surface-2);
+  padding: 4px 8px;
 }
-.ev:first-child { border-top: 0; padding-top: 0; }
+/* セクションの区切りは、背景色を交互に濃淡させて表す */
+.ev:nth-child(even) { background: var(--surface); }
+/* 丸の中に数字。ラベル・結果の1行目と中心の高さを合わせる */
 .ev-no {
-  font-size: 1.1rem;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: .72rem;
   font-weight: 700;
-  color: var(--muted);
-  line-height: 40px;
 }
 
 /* ラベル｜結果（または真偽ボタン） */

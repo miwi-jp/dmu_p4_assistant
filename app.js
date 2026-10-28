@@ -265,8 +265,6 @@ function renderElem2() {
 
 // --- 発動画面 ---
 
-const EVENT_NO = ['①', '②', '③', '④', '⑤', '⑥'];
-
 const label = (text, cls) => `<span class="row-label${cls ? ` k-${cls}` : ''}">${text}</span>`;
 
 function elemText(type, truth) {
@@ -285,7 +283,7 @@ function inputLine(lbl, path) {
 }
 
 function event(no, lines) {
-  return `<section class="ev"><span class="ev-no">${EVENT_NO[no - 1]}</span><div class="ev-lines">${lines}</div></section>`;
+  return `<section class="ev"><span class="ev-no">${no}</span><div class="ev-lines">${lines}</div></section>`;
 }
 
 const stepText = (value) => (value === null ? '' : judgeStep(value));
