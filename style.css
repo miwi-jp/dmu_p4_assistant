@@ -180,18 +180,23 @@ main,
 }
 
 /* ラベル｜結果（または真偽ボタン） */
+/* 上揃えにして、ラベルと番号を結果の1行目（またはボタン）の高さにそろえる */
 .line {
   display: grid;
   grid-template-columns: 3.4em 1fr;
-  align-items: center;
+  align-items: start;
   gap: 8px;
   min-height: 40px;
 }
-.row-label { font-size: .9rem; color: var(--muted); line-height: 1.2; }
-.result { font-size: 1.3rem; font-weight: 800; line-height: 1.25; }
-.result .sub { font-size: .8rem; font-weight: 400; color: var(--muted); margin-left: 2px; }
-.result .plus { color: var(--muted); font-weight: 400; margin: 0 .3em; }
-.result .part { white-space: nowrap; }
+.row-label { font-size: .9rem; color: var(--muted); line-height: 1.2; padding-top: 10px; }
+/* 補足付きで2行になった結果も、上下に他と同じくらいの余白を取る */
+.result { font-size: 1.3rem; font-weight: 800; line-height: 1.25; padding: 6px 0; }
+/* 補足（タケノコ／ドーナツ）は結果の下の行に出す */
+.result .sub { display: block; font-size: .625rem; font-weight: 400; color: var(--muted); line-height: 1.2; }
+/* 行の高さを結果と同じ（1.25 ÷ 0.8）にして、結果の1行目の上下中央に置く */
+.result .plus { color: var(--muted); font-size: .8em; font-weight: 400; line-height: 1.5625; margin: 0 .3em; vertical-align: top; }
+/* 補足は上の結果（中のまま／外へ）に対して中央ぞろえ */
+.result .part { display: inline-block; vertical-align: top; white-space: nowrap; text-align: center; }
 
 .mini { display: flex; gap: 6px; }
 .mini .btn {

@@ -33,8 +33,8 @@ function judgeMagicOut(thunderPrev, thunderNow, icePrev, iceNow) {
   const thunder = thunderPrev !== thunderNow;
   const ice = icePrev !== iceNow;
   if (thunder && ice) return '両方踏む';
-  if (thunder) return '雷踏む';
-  if (ice) return '氷踏む';
+  if (thunder) return '⚡踏む';
+  if (ice) return '⛄踏む';
   return '踏まない';
 }
 
@@ -290,11 +290,11 @@ function event(no, lines) {
 
 const stepText = (value) => (value === null ? '' : judgeStep(value));
 
-// 水雷＋加速度（水雷が付いていなければ頭割り）
+// 水雷＋加速度（ラベルはデバフに関係なく「水雷」。水雷が付いていなければ頭割り）
 function wtAccelParts(timing) {
   const wt = wtAt(timing);
   return {
-    lbl: wt ? label(WT_NAME[wt.kind], wt.kind) : label('水雷'),
+    lbl: label('水雷'),
     parts: [wt ? judgeWT(wt.kind, wt.truth) : '頭割り', judgeAccel(accelSource().truth)],
   };
 }
@@ -317,13 +317,13 @@ function renderExec() {
     <div class="timeline">
       ${event(1, resultLine(early.lbl, early.parts))}
       ${event(2, resultLine(label('視線'), [judgeGaze(gc1.truth), stepText(exec.thunder)]) +
-        inputLine(label('雷', 'thunder'), 'exec.thunder'))}
+        inputLine(label('⚡'), 'exec.thunder'))}
       ${event(3, resultLine(label(ELEM_NAME.fire, 'fire'), [elemText('fire', fireTruth)]))}
       ${event(4, resultLine(late.lbl, [...late.parts, stepText(exec.ice)]) +
-        inputLine(label('氷', 'ice'), 'exec.ice'))}
+        inputLine(label('⛄'), 'exec.ice'))}
       ${event(5, resultLine(label('視線'), [judgeGaze(gc2.truth)]) +
-        inputLine(label('雷', 'thunder'), 'exec.moThunder') +
-        inputLine(label('氷', 'ice'), 'exec.moIce'))}
+        inputLine(label('⚡'), 'exec.moThunder') +
+        inputLine(label('⛄'), 'exec.moIce'))}
       ${event(6, resultLine(label(ELEM_NAME.tsunami, 'tsunami'), [elemText('tsunami', tsunamiTruth), magicOutText()]))}
     </div>
   `;
