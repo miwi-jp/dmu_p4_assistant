@@ -3,7 +3,7 @@
 // ===== 定義 =====
 
 const STORAGE_KEY = 'dmu-p4-assistant-v2';
-const SCREEN_LABELS = ['① GC①', '② 炎津波①', '③ GC②', '④ 炎津波②', '⑤ 発動'];
+const SCREEN_LABELS = ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'];
 const LAST_INPUT_SCREEN = 3;
 const EXEC_SCREEN = 4;
 

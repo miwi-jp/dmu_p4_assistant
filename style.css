@@ -2,6 +2,7 @@
   --bg: #14161c;
   --surface: #1d2029;
   --surface-2: #262a35;
+  --surface-3: #313644;
   --border: #343947;
   --text: #eceef3;
   --muted: #8a91a3;
@@ -15,7 +16,7 @@
   --tsunami: #38c7d6;
   --accel: #f2c94c;
 
-  --radius: 12px;
+  --radius: 8px;
   color-scheme: dark;
 }
 
@@ -50,24 +51,30 @@ main,
 .site-sub { margin: 0; color: var(--muted); font-size: .8rem; }
 
 /* ---------- 進行状況 ---------- */
+/* 右向きの矢印形。現在地は背景色の濃淡で示す */
 .steps {
+  --arrow: 8px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  gap: 2px;
   margin-top: 16px;
 }
 .step {
+  --arrow-shape: polygon(0 0, calc(100% - var(--arrow)) 0, 100% 50%, calc(100% - var(--arrow)) 100%, 0 100%, var(--arrow) 50%);
   font-size: .72rem;
   text-align: center;
-  padding: 6px 2px;
-  border-radius: 6px;
+  padding: 6px 2px 6px var(--arrow);
   background: var(--surface);
   color: var(--muted);
-  border: 1px solid transparent;
   white-space: nowrap;
+  clip-path: var(--arrow-shape);
+}
+.step:first-child {
+  --arrow-shape: polygon(0 0, calc(100% - var(--arrow)) 0, 100% 50%, calc(100% - var(--arrow)) 100%, 0 100%);
+  padding-left: 2px;
 }
 .step.done { color: var(--text); }
-.step.current { border-color: var(--accent); color: var(--text); font-weight: 700; }
+.step.current { background: var(--surface-3); color: var(--text); font-weight: 700; }
 
 /* ---------- 入力画面 ---------- */
 .screen-title { font-size: 1.25rem; margin: 0 0 4px; }
