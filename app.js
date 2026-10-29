@@ -431,6 +431,7 @@ function render() {
   renderChrome();
   renderSteps();
   app.innerHTML = screens[state.screen]();
+  app.classList.toggle('input-screen', state.screen !== EXEC_SCREEN);
   // 戻る・リセットは、下部フローの下に置く
   navArea.innerHTML = navButtons();
 }

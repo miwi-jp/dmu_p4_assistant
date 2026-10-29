@@ -100,7 +100,10 @@ main,
 
 /* ---------- 入力画面 ---------- */
 /* 暗記フェーズの見出しは目立たせない（小さく・灰色・標準の太さ） */
-.screen-title { font-size: .875rem; font-weight: 400; color: var(--muted); margin: 0 0 8px; padding: 0 var(--inset); }
+.screen-title { font-size: .875rem; font-weight: 400; color: var(--muted); margin: 0 0 8px; }
+
+/* 入力画面は中身（見出し・ボタン）に左右の余白を付ける。結果画面は背景・線を端まで届かせるので付けない */
+#app.input-screen { padding: 0 var(--inset); }
 .screen-note { color: var(--muted); font-size: .85rem; margin: 0 0 14px; }
 
 .group { margin-bottom: 16px; }
