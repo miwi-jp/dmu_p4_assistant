@@ -280,9 +280,12 @@ function renderGC1() {
   `;
 }
 
-// 自動で決まる項目を、押せない選択済みボタンとして表示する
+// 自動で決まることを示す鍵マーク（自作のSVG）
+const LOCK_ICON = '<svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+
+// 自動で決まる項目を、鍵マーク付きの押せない選択済みボタンとして表示する
 function fixedButton(label, color) {
-  return `<div class="choices cols-1"><button type="button" class="btn c-${color} fixed sel" disabled>${label}</button></div>`;
+  return `<div class="choices cols-1"><button type="button" class="btn c-${color} fixed sel" disabled>${LOCK_ICON}${label}</button></div>`;
 }
 
 function nextButton() {
