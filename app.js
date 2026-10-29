@@ -3,38 +3,101 @@
 // ===== 定義 =====
 
 const STORAGE_KEY = 'dmu-p4-assistant-v2';
-const SCREEN_LABELS = ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'];
+const LANG_KEY = 'dmu-p4-assistant-lang';
 const EXEC_SCREEN = 4;
 
-const WT_NAME = { water: '水', thunder: '雷' };
-const ELEM_NAME = { fire: 'ほのお', tsunami: 'つなみ' };
+// ===== 表示する文言（日本語／英語） =====
+// 英語は TRANSLATION.md の対訳表（WTFDIG!? の表記を参考）に合わせる
+
+const TEXT = {
+  ja: {
+    pageTitle: '絶妖星乱舞 P4 アシスタント',
+    siteSub: 'ヤーン式',
+    metaDesc: 'FF14 絶妖星乱舞 P4（ヤーン式）の暗記入力と発動タイムライン表示ツール',
+    steps: ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'],
+    gc1Title: 'グランドクロス（1回目）',
+    gc2Title: 'グランドクロス（2回目）',
+    elem1Title: 'ほのお／つなみ（1回目）',
+    elem2Title: 'ほのお／つなみ（2回目）',
+    real: '真', fake: '偽',
+    water: '水', thunder: '雷',
+    early: '早', late: '遅',
+    accel: '加速度',
+    fireBtn: 'ほのお', tsunamiBtn: 'つなみ',
+    next: '次へ →', back: '← 戻る', reset: 'リセット', resetConfirm: 'もう一度押すとリセット',
+    lblWT: '水雷', lblGaze: '視線', lblFire: 'ほのお', lblTsunami: 'つなみ',
+    stack: '頭割り', spread: '散開',
+    stop: '止まる', move: '動く',
+    lookAway: '見ない', lookAt: '見る',
+    avoid: '踏まない', soak: '踏む',
+    out: '外へ', outSub: '（タケノコ）',
+    stay: '中のまま', staySub: '（ドーナツ）',
+    moAvoid: '踏まない', moBoth: '両方踏む', moThunder: '⚡踏む', moIce: '⛄踏む',
+  },
+  en: {
+    pageTitle: 'DMU P4 Assistant',
+    siteSub: '',
+    metaDesc: 'FFXIV Dancing Mad (Ultimate) P4 helper: memorize the debuffs, then follow the resolve timeline',
+    steps: ['NEX 1', 'Chaos 1', 'NEX 2', 'Chaos 2', 'Resolve'],
+    gc1Title: 'Neo Exdeath #1',
+    gc2Title: 'Neo Exdeath #2',
+    elem1Title: 'Chaos #1',
+    elem2Title: 'Chaos #2',
+    real: 'Real', fake: 'Fake',
+    water: 'Water', thunder: 'Lightning',
+    early: 'Short', late: 'Long',
+    accel: 'Accel Bomb',
+    fireBtn: 'Fire', tsunamiBtn: 'Water',
+    next: 'Next →', back: '← Back', reset: 'Reset', resetConfirm: 'Tap again to reset',
+    lblWT: 'W/L', lblGaze: 'Gaze', lblFire: 'Inferno', lblTsunami: 'Tsunami',
+    stack: 'Stack', spread: 'Spread',
+    stop: 'Stillness', move: 'Motion',
+    lookAway: 'Look away', lookAt: 'Look at',
+    avoid: 'Avoid', soak: 'Soak',
+    out: 'Out', outSub: '(AOE)',
+    stay: 'Stay in', staySub: '(Donut)',
+    moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak ⚡', moIce: 'Soak ⛄',
+  },
+};
+
+// 最初はブラウザの言語設定に合わせる。切り替えたら覚えておく
+function detectLang() {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    if (saved === 'ja' || saved === 'en') return saved;
+  } catch (e) { /* 読めなければブラウザの設定で決める */ }
+  return (navigator.language || '').toLowerCase().startsWith('ja') ? 'ja' : 'en';
+}
+
+let lang = detectLang();
+const t = (key) => TEXT[lang][key];
 
 // ===== 判定 =====
 
 // 水：真→頭割り／偽→散開　雷：真→散開／偽→頭割り
 function judgeWT(kind, truth) {
   const stack = kind === 'water' ? truth : !truth;
-  return stack ? '頭割り' : '散開';
+  return stack ? t('stack') : t('spread');
 }
 
-const judgeAccel = (truth) => (truth ? '止まる' : '動く');
-const judgeGaze = (truth) => (truth ? '見ない' : '見る');
-const judgeStep = (truth) => (truth ? '踏まない' : '踏む');
+const judgeAccel = (truth) => (truth ? t('stop') : t('move'));
+const judgeGaze = (truth) => (truth ? t('lookAway') : t('lookAt'));
+const judgeStep = (truth) => (truth ? t('avoid') : t('soak'));
 
 // ほのお：真→タケノコ／偽→ドーナツ　つなみ：真→ドーナツ／偽→タケノコ
 function judgeElem(type, truth) {
   const spike = type === 'fire' ? truth : !truth;
-  return spike ? { main: '外へ', sub: 'タケノコ' } : { main: '中のまま', sub: 'ドーナツ' };
+  return spike ? { main: t('out'), sub: t('outSub') } : { main: t('stay'), sub: t('staySub') };
 }
 
 // マジックアウト：前回と真偽が違うほうを踏む
 function judgeMagicOut(thunderPrev, thunderNow, icePrev, iceNow) {
   const thunder = thunderPrev !== thunderNow;
   const ice = icePrev !== iceNow;
-  if (thunder && ice) return '両方踏む';
-  if (thunder) return '⚡踏む';
-  if (ice) return '⛄踏む';
-  return '踏まない';
+  if (thunder && ice) return t('moBoth');
+  if (thunder) return t('moThunder');
+  if (ice) return t('moIce');
+  return t('moAvoid');
 }
 
 // ===== 状態 =====
@@ -130,6 +193,13 @@ function toggleGC1(item) {
   render();
 }
 
+function setLang(next) {
+  if (next !== 'ja' && next !== 'en') return;
+  lang = next;
+  try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* 保存できなくても切り替えは行う */ }
+  render();
+}
+
 function goTo(screen) {
   state.screen = Math.max(0, Math.min(EXEC_SCREEN, screen));
   save();
@@ -142,7 +212,7 @@ function reset(button) {
   if (Date.now() > resetArmedUntil) {
     resetArmedUntil = Date.now() + 2000;
     button.classList.add('armed');
-    button.textContent = 'もう一度押すとリセット';
+    button.textContent = t('resetConfirm');
     setTimeout(() => {
       if (Date.now() >= resetArmedUntil) render();
     }, 2050);
@@ -161,12 +231,14 @@ document.addEventListener('click', (e) => {
   else if (btn.dataset.action === 'next') { if (isComplete(state.screen)) goTo(state.screen + 1); }
   else if (btn.dataset.action === 'back') goTo(state.screen - 1);
   else if (btn.dataset.action === 'reset') reset(btn);
+  else if (btn.dataset.action === 'lang') setLang(btn.dataset.value);
 });
 
 // ===== 描画 =====
 
 const app = document.getElementById('app');
 const stepsEl = document.getElementById('steps');
+const navArea = document.getElementById('nav-area');
 
 // off：表示はするが押せない状態にする
 function choice(path, value, label, color, sub, off = false) {
@@ -177,7 +249,7 @@ function choice(path, value, label, color, sub, off = false) {
 }
 
 const truthChoices = (path) =>
-  `<div class="choices seg divided">${choice(path, true, '真', 'true')}${choice(path, false, '偽', 'false')}</div>`;
+  `<div class="choices seg divided">${choice(path, true, t('real'), 'true')}${choice(path, false, t('fake'), 'false')}</div>`;
 
 const group = (label, body) =>
   `<div class="group">${label ? `<div class="group-label">${label}</div>` : ''}${body}</div>`;
@@ -185,19 +257,19 @@ const group = (label, body) =>
 // earlySec / lateSec：デバフアイコンに表示される秒数（GC①は 50／1m、GC②は 35／59）
 // enabled：水か雷を選ぶまでは、表示だけして押せない状態にする
 const timingChoices = (path, earlySec, lateSec, enabled) =>
-  `<div class="choices seg divided">${choice(path, 'early', '早', 'plain', earlySec, !enabled)}${choice(path, 'late', '遅', 'plain', lateSec, !enabled)}</div>`;
+  `<div class="choices seg divided">${choice(path, 'early', t('early'), 'plain', earlySec, !enabled)}${choice(path, 'late', t('late'), 'plain', lateSec, !enabled)}</div>`;
 
 function navButtons() {
   const back = state.screen > 0
-    ? '<button type="button" class="btn" data-action="back">← 戻る</button>'
+    ? `<button type="button" class="btn" data-action="back">${t('back')}</button>`
     : '';
-  return `<div class="nav">${back}<button type="button" class="btn danger" data-action="reset">リセット</button></div>`;
+  return `<div class="nav">${back}<button type="button" class="btn danger" data-action="reset">${t('reset')}</button></div>`;
 }
 
 // 水・雷のボタン（アイコン＋文字）。選択は灰色の濃淡で表す
 function wtButton(kind, current, attrs) {
   const selected = current === kind;
-  return `<button type="button" class="btn wt-btn${selected ? ' sel' : ''}" ${attrs} data-value="${kind}" aria-pressed="${selected}"><img class="wt-icon" src="${ICONS[kind]}" alt=""><span>${WT_NAME[kind]}</span></button>`;
+  return `<button type="button" class="btn wt-btn${selected ? ' sel' : ''}" ${attrs} data-value="${kind}" aria-pressed="${selected}"><img class="wt-icon" src="${ICONS[kind]}" alt=""><span>${t(kind)}</span></button>`;
 }
 
 function gc1Toggle(item, label, color, selected) {
@@ -207,13 +279,13 @@ function gc1Toggle(item, label, color, selected) {
 function renderGC1() {
   const { wt, accel } = state.gc1;
   return `
-    <h2 class="screen-title">グランドクロス（1回目）</h2>
+    <h2 class="screen-title">${t('gc1Title')}</h2>
     ${group('', truthChoices('gc1.truth'))}
     ${group('', `<div class="choices seg divided">
       ${wtButton('water', wt, 'data-action="gc1"')}
       ${wtButton('thunder', wt, 'data-action="gc1"')}
     </div>${timingChoices('gc1.timing', '50', '1m', !!wt)}`)}
-    ${group('', `<div class="choices cols-1">${gc1Toggle('accel', '加速度', 'accel', accel)}</div>`)}
+    ${group('', `<div class="choices cols-1">${gc1Toggle('accel', t('accel'), 'accel', accel)}</div>`)}
     ${nextButton()}
   `;
 }
@@ -224,14 +296,14 @@ function fixedButton(label, color) {
 }
 
 function nextButton() {
-  return `<button type="button" class="btn next" data-action="next"${isComplete(state.screen) ? '' : ' disabled'}>次へ →</button>`;
+  return `<button type="button" class="btn next" data-action="next"${isComplete(state.screen) ? '' : ' disabled'}>${t('next')}</button>`;
 }
 
 function renderElem1() {
   return `
-    <h2 class="screen-title">ほのお／つなみ（1回目）</h2>
+    <h2 class="screen-title">${t('elem1Title')}</h2>
     ${group('', truthChoices('elem1.truth'))}
-    ${group('', `<div class="choices seg">${choice('elem1.type', 'fire', 'ほのお', 'fire')}${choice('elem1.type', 'tsunami', 'つなみ', 'tsunami')}</div>`)}
+    ${group('', `<div class="choices seg">${choice('elem1.type', 'fire', t('fireBtn'), 'fire')}${choice('elem1.type', 'tsunami', t('tsunamiBtn'), 'tsunami')}</div>`)}
     ${nextButton()}
   `;
 }
@@ -241,10 +313,10 @@ function renderGC2() {
   const hasAccel = gc2HasAccel();
   // 加速度はGC①から決まるので、押せない選択済みボタンで表示する
   return `
-    <h2 class="screen-title">グランドクロス（2回目）</h2>
+    <h2 class="screen-title">${t('gc2Title')}</h2>
     ${group('', truthChoices('gc2.truth'))}
     ${needsWT ? group('', `<div class="choices seg divided">${wtButton('water', state.gc2.wt, 'data-set="gc2.wt"')}${wtButton('thunder', state.gc2.wt, 'data-set="gc2.wt"')}</div>${timingChoices('gc2.timing', '35', '59', !!state.gc2.wt)}`) : ''}
-    ${hasAccel ? group('', fixedButton('加速度', 'accel')) : ''}
+    ${hasAccel ? group('', fixedButton(t('accel'), 'accel')) : ''}
     ${nextButton()}
   `;
 }
@@ -252,9 +324,9 @@ function renderGC2() {
 function renderElem2() {
   const type = elem2Type();
   return `
-    <h2 class="screen-title">ほのお／つなみ（2回目）</h2>
+    <h2 class="screen-title">${t('elem2Title')}</h2>
     ${group('', truthChoices('elem2.truth'))}
-    ${group('', fixedButton(ELEM_NAME[type], type))}
+    ${group('', fixedButton(t(type === 'fire' ? 'fireBtn' : 'tsunamiBtn'), type))}
     ${nextButton()}
   `;
 }
@@ -265,7 +337,7 @@ const label = (text, cls) => `<span class="row-label${cls ? ` k-${cls}` : ''}">$
 
 function elemText(type, truth) {
   const r = judgeElem(type, truth);
-  return `${r.main}<span class="sub">（${r.sub}）</span>`;
+  return `${r.main}<span class="sub">${r.sub}</span>`;
 }
 
 // 結果を「＋」でつないで1行に並べる（未確定の項目は出さない。折り返しは項目の間だけ）
@@ -275,7 +347,7 @@ function resultLine(lbl, parts) {
 }
 
 // trueLabel / falseLabel：ボタンの表示名（②④は「踏まない／踏む」、⑤は「真／偽」）
-function inputLine(lbl, path, trueLabel = '真', falseLabel = '偽') {
+function inputLine(lbl, path, trueLabel = t('real'), falseLabel = t('fake')) {
   return `<div class="line input-line">${lbl}<div class="mini seg divided">${choice(path, true, trueLabel, 'true')}${choice(path, false, falseLabel, 'false')}</div></div>`;
 }
 
@@ -294,8 +366,8 @@ const accelText = (truth) =>
 function wtAccelParts(timing) {
   const wt = wtAt(timing);
   return {
-    lbl: label('水雷'),
-    parts: [wt ? judgeWT(wt.kind, wt.truth) : '頭割り', accelText(accelSource().truth)],
+    lbl: label(t('lblWT')),
+    parts: [wt ? judgeWT(wt.kind, wt.truth) : t('stack'), accelText(accelSource().truth)],
   };
 }
 
@@ -316,21 +388,35 @@ function renderExec() {
   return `
     <div class="timeline">
       ${event(1, resultLine(early.lbl, early.parts))}
-      ${event(2, resultLine(label('視線'), [judgeGaze(gc1.truth), stepText(exec.thunder)]) +
-        inputLine(label('⚡', 'emoji'), 'exec.thunder', '踏まない', '踏む'))}
-      ${event(3, resultLine(label(ELEM_NAME.fire), [elemText('fire', fireTruth)]), 'fire')}
+      ${event(2, resultLine(label(t('lblGaze')), [judgeGaze(gc1.truth), stepText(exec.thunder)]) +
+        inputLine(label('⚡', 'emoji'), 'exec.thunder', t('avoid'), t('soak')))}
+      ${event(3, resultLine(label(t('lblFire')), [elemText('fire', fireTruth)]), 'fire')}
       ${event(4, resultLine(late.lbl, [...late.parts, stepText(exec.ice)]) +
-        inputLine(label('⛄', 'emoji'), 'exec.ice', '踏まない', '踏む'))}
-      ${event(5, resultLine(label('視線'), [judgeGaze(gc2.truth)]) +
+        inputLine(label('⛄', 'emoji'), 'exec.ice', t('avoid'), t('soak')))}
+      ${event(5, resultLine(label(t('lblGaze')), [judgeGaze(gc2.truth)]) +
         inputLine(label('⚡', 'emoji'), 'exec.moThunder') +
         inputLine(label('⛄', 'emoji'), 'exec.moIce'))}
-      ${event(6, resultLine(label(ELEM_NAME.tsunami), [elemText('tsunami', tsunamiTruth), magicOutText()]), 'tsunami')}
+      ${event(6, resultLine(label(t('lblTsunami')), [elemText('tsunami', tsunamiTruth), magicOutText()]), 'tsunami')}
     </div>
   `;
 }
 
+// 画面の外枠（タイトル・ページ情報・言語切り替え）を今の言語で描き直す
+function renderChrome() {
+  document.documentElement.lang = lang;
+  document.title = t('pageTitle');
+  document.querySelector('meta[name="description"]').setAttribute('content', t('metaDesc'));
+  document.getElementById('site-title').textContent = t('pageTitle');
+  const sub = document.getElementById('site-sub');
+  sub.textContent = t('siteSub');
+  sub.hidden = !t('siteSub');
+  document.getElementById('lang-switch').innerHTML = [['ja', '日本語'], ['en', 'English']]
+    .map(([code, name]) => `<button type="button" class="btn${lang === code ? ' sel' : ''}" data-action="lang" data-value="${code}" aria-pressed="${lang === code}">${name}</button>`)
+    .join('');
+}
+
 function renderSteps() {
-  stepsEl.innerHTML = SCREEN_LABELS.map((label, i) => {
+  stepsEl.innerHTML = t('steps').map((label, i) => {
     const cls = i === state.screen ? 'current' : i < state.screen ? 'done' : '';
     return `<span class="step ${cls}">${label}</span>`;
   }).join('');
@@ -342,8 +428,11 @@ function render() {
     if (!isComplete(i)) { state.screen = i; break; }
   }
   const screens = [renderGC1, renderElem1, renderGC2, renderElem2, renderExec];
+  renderChrome();
   renderSteps();
-  app.innerHTML = screens[state.screen]() + navButtons();
+  app.innerHTML = screens[state.screen]();
+  // 戻る・リセットは、下部フローの下に置く
+  navArea.innerHTML = navButtons();
 }
 
 // ===== アイコン画像 =====

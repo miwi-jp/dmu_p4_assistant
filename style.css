@@ -50,6 +50,7 @@ body {
 .site-header,
 .steps,
 main,
+.nav-area,
 .site-footer {
   max-width: 600px;
   margin-inline: auto;
@@ -72,7 +73,7 @@ main,
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0;
-  margin-top: 32px; /* 戻る・リセットとの間。上の余白（次へとの間）と同じ */
+  margin-top: 32px; /* 次へ（結果画面では①〜⑥）との間 */
 }
 /* 前の矢印の先端を次の矢印のくぼみに食い込ませ、間の隙間を細くする（横方向の隙間は4px） */
 .step + .step { margin-left: calc(4px - var(--arrow)); }
@@ -182,7 +183,7 @@ main,
   cursor: default;
 }
 
-/* 戻る・リセット：押し間違いを防ぐため、次へから大きく離して小さく中央にまとめる */
+/* 戻る・リセット：押し間違いを防ぐため、下部フローの下に小さく中央にまとめる */
 .nav {
   display: flex;
   justify-content: center;
@@ -277,6 +278,16 @@ main,
   text-align: center;
 }
 .site-footer p { margin: 2px 0; }
+
+/* 言語切り替え（フッターの上に小さく、中央に置く） */
+.lang-switch { display: inline-flex; margin-bottom: 12px; }
+.lang-switch .btn {
+  min-height: 32px;
+  min-width: 80px;
+  padding: 0 12px;
+  font-size: .8rem;
+  font-weight: 600;
+}
 
 @media (min-width: 600px) {
   .site-header h1 { font-size: 1.2rem; }
