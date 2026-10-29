@@ -68,8 +68,8 @@
 | ⑤ボタン | 真／偽 | Real／Fake | ◎ |  |
 | ⑥結果 | 踏まない | Avoid both | △ |  |
 | ⑥結果 | 両方踏む | Soak both | △ |  |
-| ⑥結果 | ⚡線踏む | Soak ⚡ | △ | Soak ⚡Bar |
-| ⑥結果 | ⛄扇踏む | Soak ⛄ | △ | Soak ⛄Cone |
+| ⑥結果 | ⚡線踏む | Soak ⚡ | △ | Soak Bar⚡ |
+| ⑥結果 | ⛄扇踏む | Soak ⛄ | △ | Soak Cone⛄ |
 | ②④⑤ラベル | ⚡線 | — | — | ⚡Bar |
 | ②④⑤ラベル | ⛄扇 | — | — | ⛄Cone |
 

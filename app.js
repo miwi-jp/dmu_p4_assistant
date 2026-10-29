@@ -47,7 +47,7 @@ const TEXT = {
     avoid: 'Avoid', soak: 'Soak',
     out: 'Out', outSub: '(AOE)',
     stay: 'Stay in', staySub: '(Donut)',
-    moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak ⚡Bar', moIce: 'Soak ⛄Cone',
+    moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak Bar⚡', moIce: 'Soak Cone⛄',
     bar: 'Bar', cone: 'Cone',
   },
 };
