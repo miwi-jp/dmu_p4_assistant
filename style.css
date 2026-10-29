@@ -28,6 +28,7 @@
   --tsunami-sel: #3a6aa8;
 
   --radius: 8px;
+  --inset: 16px; /* 文字だけの部分や結果画面の中身の左右の余白 */
   color-scheme: dark;
 }
 
@@ -41,22 +42,25 @@ body {
   color: var(--text);
   font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic UI", "Meiryo", sans-serif;
   line-height: 1.5;
-  padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+  /* 画面の左右は余白なし。ボタンや結果の背景・線は画面の端まで届く */
+  padding: 0 0 calc(24px + env(safe-area-inset-bottom));
 }
 
+/* PC・タブレットでは横に広がりすぎないよう、最大600pxで中央に置く */
 .site-header,
 .steps,
 main,
 .site-footer {
-  max-width: 560px;
+  max-width: 600px;
   margin-inline: auto;
 }
 
+/* 文字だけの部分は、結果画面の中身（左右 --inset）に合わせて内側に寄せる */
 .site-header {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 14px 0 6px;
+  padding: 14px var(--inset) 6px;
 }
 .site-header h1 { font-size: 1.05rem; margin: 0; }
 .site-sub { margin: 0; color: var(--muted); font-size: .8rem; }
@@ -91,7 +95,7 @@ main,
 
 /* ---------- 入力画面 ---------- */
 /* 暗記フェーズの見出しは目立たせない（小さく・灰色・標準の太さ） */
-.screen-title { font-size: .875rem; font-weight: 400; color: var(--muted); margin: 0 0 8px; }
+.screen-title { font-size: .875rem; font-weight: 400; color: var(--muted); margin: 0 0 8px; padding: 0 var(--inset); }
 .screen-note { color: var(--muted); font-size: .85rem; margin: 0 0 14px; }
 
 .group { margin-bottom: 16px; }
@@ -198,7 +202,7 @@ main,
   grid-template-columns: 24px 1fr;
   align-items: start;
   gap: 6px;
-  padding: 4px 8px;
+  padding: 4px var(--inset);
 }
 /* セクションの区切りは細い線。③⑥だけ背景に色を付ける */
 .ev + .ev { border-top: 1px solid var(--surface-2); }
@@ -263,6 +267,7 @@ main,
 
 .site-footer {
   margin-top: 28px;
+  padding: 0 var(--inset);
   color: var(--muted);
   font-size: .72rem;
   text-align: center;
