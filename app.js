@@ -229,8 +229,7 @@ function nextButton() {
 
 function renderElem1() {
   return `
-    <h2 class="screen-title">ほのお／つなみ①</h2>
-    <p class="screen-note">種類と真偽を選んでください。</p>
+    <h2 class="screen-title">ほのお／つなみ（1回目）</h2>
     ${group('', truthChoices('elem1.truth'))}
     ${group('', `<div class="choices seg">${choice('elem1.type', 'fire', 'ほのお', 'fire')}${choice('elem1.type', 'tsunami', 'つなみ', 'tsunami')}</div>`)}
     ${nextButton()}
@@ -253,7 +252,7 @@ function renderGC2() {
 function renderElem2() {
   const type = elem2Type();
   return `
-    <h2 class="screen-title">ほのお／つなみ②</h2>
+    <h2 class="screen-title">ほのお／つなみ（2回目）</h2>
     ${group('', truthChoices('elem2.truth'))}
     ${group('', fixedButton(ELEM_NAME[type], type))}
     ${nextButton()}
