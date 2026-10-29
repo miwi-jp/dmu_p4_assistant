@@ -67,9 +67,11 @@ main,
   --arrow: 8px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 2px;
+  gap: 0;
   margin-top: 16px;
 }
+/* 前の矢印の先端を次の矢印のくぼみに食い込ませ、間の隙間を細くする（横方向の隙間は4px） */
+.step + .step { margin-left: calc(4px - var(--arrow)); }
 .step {
   --arrow-shape: polygon(0 0, calc(100% - var(--arrow)) 0, 100% 50%, calc(100% - var(--arrow)) 100%, 0 100%, var(--arrow) 50%);
   font-size: .72rem;
