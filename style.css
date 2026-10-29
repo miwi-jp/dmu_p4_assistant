@@ -67,36 +67,29 @@ main,
 .site-sub { margin: 0; color: var(--muted); font-size: .8rem; }
 
 /* ---------- 進行状況 ---------- */
-/* 右向きの矢印形。現在地は背景色の濃淡で示す */
+/* 文字だけで「GC① › ほ・つ① › …」と並べる */
 .steps {
-  --arrow: 8px;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   margin-top: 32px; /* 次へ（結果画面では①〜⑥）との間 */
-}
-/* 前の矢印の先端を次の矢印のくぼみに食い込ませ、間の隙間を細くする（横方向の隙間は4px） */
-.step + .step { margin-left: calc(4px - var(--arrow)); }
-.step {
-  --arrow-shape: polygon(0 0, calc(100% - var(--arrow)) 0, 100% 50%, calc(100% - var(--arrow)) 100%, 0 100%, var(--arrow) 50%);
-  font-size: .72rem;
-  text-align: center;
-  padding: 6px 2px 6px var(--arrow);
-  background: var(--surface);
+  padding: 0 var(--inset);
+  font-size: .8rem;
   color: var(--muted);
-  white-space: nowrap;
-  clip-path: var(--arrow-shape);
 }
-.step:first-child {
-  --arrow-shape: polygon(0 0, calc(100% - var(--arrow)) 0, 100% 50%, calc(100% - var(--arrow)) 100%, 0 100%);
-  padding-left: 2px;
+.step { white-space: nowrap; }
+/* 区切りは自作の細い山かっこ（SVG）。外部読み込みなし */
+.step + .step::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin: 0 3px;
+  vertical-align: -1px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolyline points='9,6 15,12 9,18' fill='none' stroke='%236b7182' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-/* 最後の「発動」は先がとがらない（右端はまっすぐ。左のくぼみは残す） */
-.step:last-child {
-  --arrow-shape: polygon(0 0, 100% 0, 100% 100%, 0 100%, var(--arrow) 50%);
-}
-.step.done { color: var(--text); }
-.step.current { background: var(--surface-3); color: var(--text); font-weight: 700; }
+/* 白文字は現在地だけ。終わったステップもまだのステップも灰色 */
+.step.current { color: var(--text); }
 
 /* ---------- 入力画面 ---------- */
 /* 暗記フェーズの見出しは目立たせない（小さく・灰色・標準の太さ） */
