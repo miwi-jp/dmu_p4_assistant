@@ -129,10 +129,11 @@ const elem2Type = () => (state.elem1.type === 'fire' ? 'tsunami' : 'fire');
 function isComplete(screen) {
   const { gc1, elem1, gc2, elem2 } = state;
   switch (screen) {
-    // 真偽を選べば進める。水か雷を選んだときは早遅も必須
+    // GC①：真偽を選べば進める。水か雷を選んだときは早遅も必須
     case 0: return gc1.truth !== null && (!gc1.wt || gc1.timing !== null);
     case 1: return elem1.truth !== null && elem1.type !== null;
-    case 2: return gc2.truth !== null && (!gc2NeedsWT() || !gc2.wt || gc2.timing !== null);
+    // GC①で水雷が付かなかった場合、GC②では水か雷と早遅も必須（水雷はどちらかのGCで必ず付く）
+    case 2: return gc2.truth !== null && (!gc2NeedsWT() || (gc2.wt !== null && gc2.timing !== null));
     case 3: return elem2.truth !== null;
     default: return true;
   }
