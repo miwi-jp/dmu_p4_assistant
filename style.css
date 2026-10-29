@@ -90,6 +90,10 @@ main,
   --arrow-shape: polygon(0 0, calc(100% - var(--arrow)) 0, 100% 50%, calc(100% - var(--arrow)) 100%, 0 100%);
   padding-left: 2px;
 }
+/* 最後の「発動」は先がとがらない（右端はまっすぐ。左のくぼみは残す） */
+.step:last-child {
+  --arrow-shape: polygon(0 0, 100% 0, 100% 100%, 0 100%, var(--arrow) 50%);
+}
 .step.done { color: var(--text); }
 .step.current { background: var(--surface-3); color: var(--text); font-weight: 700; }
 
