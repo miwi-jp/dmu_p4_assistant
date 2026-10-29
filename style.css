@@ -249,8 +249,8 @@ main,
 .row-label { font-size: .9rem; color: var(--muted); line-height: 1.2; padding-top: 10px; }
 /* 真偽ボタンの行が上下に続くとき（⑤）は、間を少し空ける */
 .input-line + .input-line { margin-top: 2px; }
-/* ⚡⛄のラベルは大きく（24px）。中心の高さは他のラベルとそろえる */
-.row-label.k-emoji { font-size: 1.5rem; padding-top: 4px; }
+/* ⚡⛄のラベルは大きく（20px）。中心の高さは他のラベルとそろえる */
+.row-label.k-emoji { font-size: 1.25rem; padding-top: 7.5px; }
 
 /* 加速度は文字色で目立たせる */
 .accel-stop { color: #ff6b5f; }
