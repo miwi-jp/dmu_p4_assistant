@@ -158,6 +158,9 @@ main,
 .wt-icon { display: block; height: 48px; width: auto; }
 .wt-btn span { font-size: .85rem; }
 
+/* 加速度のアイコン：文字の左に並べる（ボタンの高さは変えない） */
+.accel-icon { height: 26px; width: auto; margin-right: 6px; vertical-align: middle; }
+
 /* 条件がそろうまで押せないボタン（水雷を選ぶ前の早遅） */
 .btn.off { opacity: .35; cursor: default; }
 .btn.off:active { transform: none; }
