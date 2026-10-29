@@ -12,8 +12,7 @@ const EXEC_SCREEN = 4;
 const TEXT = {
   ja: {
     pageTitle: '絶妖星乱舞 P4 アシスタント',
-    siteSub: 'ヤーン式',
-    metaDesc: 'FF14 絶妖星乱舞 P4（ヤーン式）の暗記入力と発動タイムライン表示ツール',
+    metaDesc: 'FF14 絶妖星乱舞 P4 の暗記入力と発動タイムライン表示ツール',
     steps: ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'],
     real: '真', fake: '偽',
     water: '水', thunder: '雷',
@@ -32,7 +31,6 @@ const TEXT = {
   },
   en: {
     pageTitle: 'DMU P4 Assistant',
-    siteSub: '',
     metaDesc: 'FFXIV Dancing Mad (Ultimate) P4 helper: memorize the debuffs, then follow the resolve timeline',
     steps: ['NEX 1', 'Chaos 1', 'NEX 2', 'Chaos 2', 'Resolve'],
     real: 'Real', fake: 'Fake',
@@ -395,9 +393,6 @@ function renderChrome() {
   document.title = t('pageTitle');
   document.querySelector('meta[name="description"]').setAttribute('content', t('metaDesc'));
   document.getElementById('site-title').textContent = t('pageTitle');
-  const sub = document.getElementById('site-sub');
-  sub.textContent = t('siteSub');
-  sub.hidden = !t('siteSub');
   document.getElementById('lang-switch').innerHTML = [['ja', '日本語'], ['en', 'English']]
     .map(([code, name]) => `<button type="button" class="btn${lang === code ? ' sel' : ''}" data-action="lang" data-value="${code}" aria-pressed="${lang === code}">${name}</button>`)
     .join('');
