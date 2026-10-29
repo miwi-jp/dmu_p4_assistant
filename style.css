@@ -216,6 +216,11 @@ main,
 }
 /* セクションの区切りは細い線。③⑥だけ背景に色を付ける */
 .ev + .ev { border-top: 1px solid var(--surface-2); }
+/* ほのお・つなみは背景色で区切れるので、上下の線は付けない */
+.ev + .ev.ev-fire,
+.ev + .ev.ev-tsunami,
+.ev.ev-fire + .ev,
+.ev.ev-tsunami + .ev { border-top: 0; }
 /* ほのお（赤っぽい）・つなみ（青っぽい）は、交互の濃淡より優先して背景に色を付ける */
 .ev.ev-fire    { background: var(--fire-bg); }
 .ev.ev-tsunami { background: var(--tsunami-bg); }
