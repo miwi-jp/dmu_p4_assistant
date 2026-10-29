@@ -250,7 +250,9 @@ main,
 /* 真偽ボタンの行が上下に続くとき（⑤）は、間を少し空ける */
 .input-line + .input-line { margin-top: 2px; }
 /* ⚡⛄のラベルは大きく（20px）。中心の高さは他のラベルとそろえる */
-.row-label.k-emoji { font-size: 1.25rem; padding-top: 7.5px; }
+.row-label.k-emoji { font-size: 1.25rem; padding-top: 7.5px; white-space: nowrap; }
+/* 絵文字の横の「線」「扇」。英語（Cone など）もラベル欄に収まる大きさにする */
+.emoji-name { font-size: .72rem; vertical-align: 2px; }
 
 /* 加速度は文字色で目立たせる */
 .accel-stop { color: #ff6b5f; }

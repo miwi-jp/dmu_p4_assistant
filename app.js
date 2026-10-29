@@ -27,7 +27,8 @@ const TEXT = {
     avoid: '踏まない', soak: '踏む',
     out: '外へ', outSub: '（タケノコ）',
     stay: '中のまま', staySub: '（ドーナツ）',
-    moAvoid: '踏まない', moBoth: '両方踏む', moThunder: '⚡踏む', moIce: '⛄踏む',
+    moAvoid: '踏まない', moBoth: '両方踏む', moThunder: '⚡線踏む', moIce: '⛄扇踏む',
+    bar: '線', cone: '扇',
   },
   en: {
     pageTitle: 'DMU P4 Assistant',
@@ -46,7 +47,8 @@ const TEXT = {
     avoid: 'Avoid', soak: 'Soak',
     out: 'Out', outSub: '(AOE)',
     stay: 'Stay in', staySub: '(Donut)',
-    moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak ⚡', moIce: 'Soak ⛄',
+    moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak ⚡Bar', moIce: 'Soak ⛄Cone',
+    bar: 'Bar', cone: 'Cone',
   },
 };
 
@@ -346,6 +348,10 @@ function event(no, lines, tint) {
   return `<section class="ev${tint ? ` ev-${tint}` : ''}"><span class="ev-no">${no}</span><div class="ev-lines">${lines}</div></section>`;
 }
 
+// 雷・氷のラベル：絵文字の横に範囲の形（線／扇）を小さく添える
+const thunderLabel = () => label(`⚡<span class="emoji-name">${t('bar')}</span>`, 'emoji');
+const iceLabel = () => label(`⛄<span class="emoji-name">${t('cone')}</span>`, 'emoji');
+
 const stepText = (value) => (value === null ? '' : judgeStep(value));
 
 // 加速度は目立たせる（止まる＝赤文字、動く＝緑文字）
@@ -379,13 +385,13 @@ function renderExec() {
     <div class="timeline">
       ${event(1, resultLine(early.lbl, early.parts))}
       ${event(2, resultLine(label(t('lblGaze')), [judgeGaze(gc1.truth), stepText(exec.thunder)]) +
-        inputLine(label('⚡', 'emoji'), 'exec.thunder', t('avoid'), t('soak')))}
+        inputLine(thunderLabel(), 'exec.thunder', t('avoid'), t('soak')))}
       ${event(3, resultLine(label(t('lblFire')), [elemText('fire', fireTruth)]), 'fire')}
       ${event(4, resultLine(late.lbl, [...late.parts, stepText(exec.ice)]) +
-        inputLine(label('⛄', 'emoji'), 'exec.ice', t('avoid'), t('soak')))}
+        inputLine(iceLabel(), 'exec.ice', t('avoid'), t('soak')))}
       ${event(5, resultLine(label(t('lblGaze')), [judgeGaze(gc2.truth)]) +
-        inputLine(label('⚡', 'emoji'), 'exec.moThunder') +
-        inputLine(label('⛄', 'emoji'), 'exec.moIce'))}
+        inputLine(thunderLabel(), 'exec.moThunder') +
+        inputLine(iceLabel(), 'exec.moIce'))}
       ${event(6, resultLine(label(t('lblTsunami')), [elemText('tsunami', tsunamiTruth), magicOutText()]), 'tsunami')}
     </div>
   `;
