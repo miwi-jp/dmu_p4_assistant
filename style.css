@@ -68,7 +68,7 @@ main,
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 0;
-  margin-top: 16px;
+  margin-top: 32px; /* 戻る・リセットとの間。上の余白（次へとの間）と同じ */
 }
 /* 前の矢印の先端を次の矢印のくぼみに食い込ませ、間の隙間を細くする（横方向の隙間は4px） */
 .step + .step { margin-left: calc(4px - var(--arrow)); }
@@ -174,15 +174,18 @@ main,
   cursor: default;
 }
 
+/* 戻る・リセット：押し間違いを防ぐため、次へから大きく離して小さく中央にまとめる */
 .nav {
   display: flex;
+  justify-content: center;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 32px;
 }
 .nav .btn {
-  flex: 1;
-  min-height: 48px;
-  font-size: .95rem;
+  min-height: 42px;
+  min-width: 90px;
+  padding: 0 14px;
+  font-size: .8125rem;
   font-weight: 600;
   color: var(--text);
 }
