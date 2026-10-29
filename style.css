@@ -70,9 +70,10 @@ main,
 /* 文字だけで「GC① › ほ・つ① › …」と並べる */
 .steps {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  margin-top: 32px; /* 次へ（結果画面では①〜⑥）との間 */
+  /* 各画面の見出しの代わりに、タイトルのすぐ下に左ぞろえで置く */
+  margin-top: 4px;
+  margin-bottom: 12px;
   padding: 0 var(--inset);
   font-size: .8rem;
   color: var(--muted);
@@ -93,7 +94,6 @@ main,
 
 /* ---------- 入力画面 ---------- */
 /* 暗記フェーズの見出しは目立たせない（小さく・灰色・標準の太さ） */
-.screen-title { font-size: .875rem; font-weight: 400; color: var(--muted); margin: 0 0 8px; }
 
 /* 入力画面は中身（見出し・ボタン）に左右の余白を付ける。結果画面は背景・線を端まで届かせるので付けない */
 #app.input-screen { padding: 0 var(--inset); }
@@ -179,12 +179,12 @@ main,
   cursor: default;
 }
 
-/* 戻る・リセット：押し間違いを防ぐため、下部フローの下に小さく中央にまとめる */
+/* 戻る・リセット：押し間違いを防ぐため、次へ（結果画面では①〜⑥）から離して小さく中央にまとめる */
 .nav {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-top: 32px;
+  margin-top: 40px;
 }
 .nav .btn {
   min-height: 42px;
@@ -267,7 +267,7 @@ main,
 .k-ice     { color: var(--tsunami); }
 
 .site-footer {
-  margin-top: 28px;
+  margin-top: 40px; /* 戻る・リセットとの間 */
   padding: 0 var(--inset);
   color: var(--muted);
   font-size: .72rem;

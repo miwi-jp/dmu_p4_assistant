@@ -15,10 +15,6 @@ const TEXT = {
     siteSub: 'ヤーン式',
     metaDesc: 'FF14 絶妖星乱舞 P4（ヤーン式）の暗記入力と発動タイムライン表示ツール',
     steps: ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'],
-    gc1Title: 'グランドクロス（1回目）',
-    gc2Title: 'グランドクロス（2回目）',
-    elem1Title: 'ほのお／つなみ（1回目）',
-    elem2Title: 'ほのお／つなみ（2回目）',
     real: '真', fake: '偽',
     water: '水', thunder: '雷',
     early: '早', late: '遅',
@@ -39,10 +35,6 @@ const TEXT = {
     siteSub: '',
     metaDesc: 'FFXIV Dancing Mad (Ultimate) P4 helper: memorize the debuffs, then follow the resolve timeline',
     steps: ['NEX 1', 'Chaos 1', 'NEX 2', 'Chaos 2', 'Resolve'],
-    gc1Title: 'Neo Exdeath #1',
-    gc2Title: 'Neo Exdeath #2',
-    elem1Title: 'Chaos #1',
-    elem2Title: 'Chaos #2',
     real: 'Real', fake: 'Fake',
     water: 'Water', thunder: 'Lightning',
     early: 'Short', late: 'Long',
@@ -279,7 +271,6 @@ function gc1Toggle(item, label, color, selected) {
 function renderGC1() {
   const { wt, accel } = state.gc1;
   return `
-    <h2 class="screen-title">${t('gc1Title')}</h2>
     ${group('', truthChoices('gc1.truth'))}
     ${group('', `<div class="choices seg divided">
       ${wtButton('water', wt, 'data-action="gc1"')}
@@ -301,7 +292,6 @@ function nextButton() {
 
 function renderElem1() {
   return `
-    <h2 class="screen-title">${t('elem1Title')}</h2>
     ${group('', truthChoices('elem1.truth'))}
     ${group('', `<div class="choices seg">${choice('elem1.type', 'fire', t('fireBtn'), 'fire')}${choice('elem1.type', 'tsunami', t('tsunamiBtn'), 'tsunami')}</div>`)}
     ${nextButton()}
@@ -313,7 +303,6 @@ function renderGC2() {
   const hasAccel = gc2HasAccel();
   // 加速度はGC①から決まるので、押せない選択済みボタンで表示する
   return `
-    <h2 class="screen-title">${t('gc2Title')}</h2>
     ${group('', truthChoices('gc2.truth'))}
     ${needsWT ? group('', `<div class="choices seg divided">${wtButton('water', state.gc2.wt, 'data-set="gc2.wt"')}${wtButton('thunder', state.gc2.wt, 'data-set="gc2.wt"')}</div>${timingChoices('gc2.timing', '35', '59', !!state.gc2.wt)}`) : ''}
     ${hasAccel ? group('', fixedButton(t('accel'), 'accel')) : ''}
@@ -324,7 +313,6 @@ function renderGC2() {
 function renderElem2() {
   const type = elem2Type();
   return `
-    <h2 class="screen-title">${t('elem2Title')}</h2>
     ${group('', truthChoices('elem2.truth'))}
     ${group('', fixedButton(t(type === 'fire' ? 'fireBtn' : 'tsunamiBtn'), type))}
     ${nextButton()}
