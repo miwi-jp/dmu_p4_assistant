@@ -12,7 +12,7 @@ const EXEC_SCREEN = 4;
 const TEXT = {
   ja: {
     pageTitle: '絶妖星乱舞 P4 アシスタント',
-    metaDesc: 'FF14 絶妖星乱舞 P4 の暗記入力と発動タイムライン表示ツール',
+    metaDesc: 'FF14 絶妖星乱舞 P4 補助ツール',
     steps: ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'],
     real: '真', fake: '偽',
     water: '水', thunder: '雷',
