@@ -277,7 +277,7 @@ function resultLine(lbl, parts) {
 
 // trueLabel / falseLabel：ボタンの表示名（②④は「踏まない／踏む」、⑤は「真／偽」）
 function inputLine(lbl, path, trueLabel = '真', falseLabel = '偽') {
-  return `<div class="line">${lbl}<div class="mini seg divided">${choice(path, true, trueLabel, 'true')}${choice(path, false, falseLabel, 'false')}</div></div>`;
+  return `<div class="line input-line">${lbl}<div class="mini seg divided">${choice(path, true, trueLabel, 'true')}${choice(path, false, falseLabel, 'false')}</div></div>`;
 }
 
 // tint：背景に色を付ける場合の種類（'fire' | 'tsunami'）
@@ -287,12 +287,16 @@ function event(no, lines, tint) {
 
 const stepText = (value) => (value === null ? '' : judgeStep(value));
 
+// 加速度は目立たせる（止まる＝赤文字、動く＝緑文字）
+const accelText = (truth) =>
+  `<span class="${truth ? 'accel-stop' : 'accel-move'}">${judgeAccel(truth)}</span>`;
+
 // 水雷＋加速度（ラベルはデバフに関係なく「水雷」。水雷が付いていなければ頭割り）
 function wtAccelParts(timing) {
   const wt = wtAt(timing);
   return {
     lbl: label('水雷'),
-    parts: [wt ? judgeWT(wt.kind, wt.truth) : '頭割り', judgeAccel(accelSource().truth)],
+    parts: [wt ? judgeWT(wt.kind, wt.truth) : '頭割り', accelText(accelSource().truth)],
   };
 }
 
@@ -314,13 +318,13 @@ function renderExec() {
     <div class="timeline">
       ${event(1, resultLine(early.lbl, early.parts))}
       ${event(2, resultLine(label('視線'), [judgeGaze(gc1.truth), stepText(exec.thunder)]) +
-        inputLine(label('⚡'), 'exec.thunder', '踏まない', '踏む'))}
+        inputLine(label('⚡', 'emoji'), 'exec.thunder', '踏まない', '踏む'))}
       ${event(3, resultLine(label(ELEM_NAME.fire), [elemText('fire', fireTruth)]), 'fire')}
       ${event(4, resultLine(late.lbl, [...late.parts, stepText(exec.ice)]) +
-        inputLine(label('⛄'), 'exec.ice', '踏まない', '踏む'))}
+        inputLine(label('⛄', 'emoji'), 'exec.ice', '踏まない', '踏む'))}
       ${event(5, resultLine(label('視線'), [judgeGaze(gc2.truth)]) +
-        inputLine(label('⚡'), 'exec.moThunder') +
-        inputLine(label('⛄'), 'exec.moIce'))}
+        inputLine(label('⚡', 'emoji'), 'exec.moThunder') +
+        inputLine(label('⛄', 'emoji'), 'exec.moIce'))}
       ${event(6, resultLine(label(ELEM_NAME.tsunami), [elemText('tsunami', tsunamiTruth), magicOutText()]), 'tsunami')}
     </div>
   `;

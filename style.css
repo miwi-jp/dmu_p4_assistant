@@ -190,7 +190,7 @@ main,
 /* ---------- 発動画面 ---------- */
 .ev {
   display: grid;
-  grid-template-columns: 1.4em 1fr;
+  grid-template-columns: 24px 1fr;
   align-items: start;
   gap: 6px;
   padding: 4px 8px;
@@ -204,12 +204,12 @@ main,
 .ev-no {
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
-  margin-top: 8px;
+  width: 24px;
+  height: 24px;
+  margin-top: 6px;
   border-radius: 50%;
   background: var(--surface-2);
-  font-size: .72rem;
+  font-size: .75rem;
   font-weight: 700;
 }
 
@@ -223,6 +223,14 @@ main,
   min-height: 40px;
 }
 .row-label { font-size: .9rem; color: var(--muted); line-height: 1.2; padding-top: 10px; }
+/* 真偽ボタンの行が上下に続くとき（⑤）は、間を少し空ける */
+.input-line + .input-line { margin-top: 2px; }
+/* ⚡⛄のラベルは大きく（24px）。中心の高さは他のラベルとそろえる */
+.row-label.k-emoji { font-size: 1.5rem; padding-top: 4px; }
+
+/* 加速度は文字色で目立たせる */
+.accel-stop { color: #ff6b5f; }
+.accel-move { color: #3fd68a; }
 /* 補足付きで2行になった結果も、上下に他と同じくらいの余白を取る */
 .result { font-size: 1.3rem; font-weight: 800; line-height: 1.25; padding: 6px 0; }
 /* 補足（タケノコ／ドーナツ）は結果の下の行に出す */
