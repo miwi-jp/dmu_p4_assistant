@@ -8,8 +8,8 @@
   --muted: #8a91a3;
   --accent: #6ea8ff;
 
-  --true: #3fb98a;
-  --false: #f06a5d;
+  --true: #12a862;
+  --false: #e0433a;
   --water: #4aa3ff;
   --thunder: #c78cff;
   --fire: #ff8a3d;
@@ -17,6 +17,15 @@
   --accel: #f2c94c;
   --fire-bg: #3a1f24;
   --tsunami-bg: #1c2b40;
+
+  /* ボタンの選択・未選択の濃淡 */
+  --gray-sel: #4a5060;
+  --true-dim: #1d3a2f;
+  --true-dim-text: #7cc4a5;
+  --false-dim: #3a2224;
+  --false-dim-text: #d08a85;
+  --fire-sel: #a8434b;
+  --tsunami-sel: #3a6aa8;
 
   --radius: 8px;
   color-scheme: dark;
@@ -79,15 +88,26 @@ main,
 .step.current { background: var(--surface-3); color: var(--text); font-weight: 700; }
 
 /* ---------- 入力画面 ---------- */
-.screen-title { font-size: 1.25rem; margin: 0 0 4px; }
+/* 暗記フェーズの見出しは目立たせない（小さく・灰色・標準の太さ） */
+.screen-title { font-size: .875rem; font-weight: 400; color: var(--muted); margin: 0 0 8px; }
 .screen-note { color: var(--muted); font-size: .85rem; margin: 0 0 14px; }
 
 .group { margin-bottom: 16px; }
 .group-label { font-size: .85rem; color: var(--muted); margin-bottom: 6px; }
 
 .choices { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
-.choices.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.choices.cols-1 { grid-template-columns: 1fr; }
+.choices + .choices { margin-top: 8px; }
 
+/* 2択（真偽・水雷・早遅・ほのおつなみ）は隙間なしでくっつけ、外側の角だけ丸める */
+.seg { gap: 0; }
+.seg > .btn { border-radius: 0; }
+.seg > .btn:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.seg > .btn:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+/* 2択の境目は、ページ背景色の細い縦線で区切る（真偽・水雷・早遅） */
+.seg.divided > .btn + .btn { border-left: 2px solid var(--bg); }
+
+/* ボタンは枠線なし。選択・未選択は背景色の濃淡で区別する */
 .btn {
   appearance: none;
   font: inherit;
@@ -95,59 +115,62 @@ main,
   font-weight: 700;
   min-height: 60px;
   padding: 8px;
+  border: 0;
   border-radius: var(--radius);
-  border: 2px solid var(--border);
   background: var(--surface);
-  color: var(--text);
+  color: var(--muted);
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 .btn:active { transform: scale(.98); }
-.btn small { display: block; font-size: .75rem; font-weight: 400; color: var(--muted); }
+.btn small { display: block; font-size: .75rem; font-weight: 400; }
 
-.btn.sel { color: #0d0f14; }
-.btn.sel small { color: rgba(13, 15, 20, .7); }
-.btn.sel.c-true    { background: var(--true);    border-color: var(--true); }
-.btn.sel.c-false   { background: var(--false);   border-color: var(--false); }
-.btn.sel.c-water   { background: var(--water);   border-color: var(--water); }
-.btn.sel.c-thunder { background: var(--thunder); border-color: var(--thunder); }
-.btn.sel.c-fire    { background: var(--fire);    border-color: var(--fire); }
-.btn.sel.c-tsunami { background: var(--tsunami); border-color: var(--tsunami); }
-.btn.sel.c-accel   { background: var(--accel);   border-color: var(--accel); }
-.btn.sel.c-plain   { background: var(--text);    border-color: var(--text); }
+/* 灰色の濃淡（早遅・水雷・加速度など） */
+.btn.sel { background: var(--gray-sel); color: var(--text); }
 
-.c-true    { border-color: color-mix(in srgb, var(--true) 45%, var(--border)); }
-.c-false   { border-color: color-mix(in srgb, var(--false) 45%, var(--border)); }
+/* 真偽：同じ色の濃淡 */
+.btn.c-true        { background: var(--true-dim);  color: var(--true-dim-text); }
+.btn.c-false       { background: var(--false-dim); color: var(--false-dim-text); }
+.btn.sel.c-true    { background: var(--true);  color: var(--text); }
+.btn.sel.c-false   { background: var(--false); color: var(--text); }
+
+/* ほのお・つなみ：結果画面の赤・青の濃淡 */
+.btn.c-fire          { background: var(--fire-bg);    color: var(--muted); }
+.btn.c-tsunami       { background: var(--tsunami-bg); color: var(--muted); }
+.btn.sel.c-fire      { background: var(--fire-sel);    color: var(--text); }
+.btn.sel.c-tsunami   { background: var(--tsunami-sel); color: var(--text); }
+
+/* 水・雷のボタン：アイコンの下に文字 */
+.btn.wt-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+}
+.wt-icon { display: block; height: 48px; width: auto; }
+.wt-btn span { font-size: .85rem; }
+
+/* 条件がそろうまで押せないボタン（水雷を選ぶ前の早遅） */
+.btn.off { opacity: .35; cursor: default; }
+.btn.off:active { transform: none; }
 
 /* 自動で決まる項目（押せない） */
 .btn.fixed { cursor: default; }
 .btn.fixed:active { transform: none; }
-.choices.cols-1 { grid-template-columns: 1fr; }
-.choices + .choices { margin-top: 8px; }
 
+/* 次へ：押せるときは白に近い灰色、押せないときは暗い背景に暗い文字 */
 .btn.next {
   width: 100%;
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #0d0f14;
+  background: #d9dce4;
+  color: var(--bg);
 }
 .btn.next:disabled {
   background: var(--surface);
-  border-color: var(--border);
-  color: var(--muted);
+  color: #4f5565;
   cursor: default;
 }
-
-.info {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 10px 12px;
-  margin-bottom: 16px;
-  font-size: .95rem;
-}
-.info b { font-size: 1.05rem; }
 
 .nav {
   display: flex;
@@ -159,10 +182,10 @@ main,
   min-height: 48px;
   font-size: .95rem;
   font-weight: 600;
-  background: transparent;
+  color: var(--text);
 }
 .nav .btn.danger { color: var(--false); }
-.nav .btn.armed { background: var(--false); border-color: var(--false); color: #0d0f14; }
+.nav .btn.armed { background: var(--false); color: #0d0f14; }
 
 /* ---------- 発動画面 ---------- */
 .ev {
@@ -209,10 +232,11 @@ main,
 /* 補足は上の結果（中のまま／外へ）に対して中央ぞろえ */
 .result .part { display: inline-block; vertical-align: top; white-space: nowrap; text-align: center; }
 
-.mini { display: flex; gap: 6px; }
+/* 結果画面の真偽ボタンは、ラベルの右から右端まで広げて半分ずつ */
+.mini { display: flex; }
 .mini .btn {
+  flex: 1;
   min-height: 38px;
-  width: 64px;
   padding: 4px;
   font-size: 1rem;
 }
