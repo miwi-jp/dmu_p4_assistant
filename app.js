@@ -2,9 +2,9 @@
 
 // ===== 定義 =====
 
-const STORAGE_KEY = 'dmu-p4-assistant-v2';
+const STORAGE_KEY = 'dmu-p4-assistant-v3';
 const LANG_KEY = 'dmu-p4-assistant-lang';
-const EXEC_SCREEN = 4;
+const EXEC_SCREEN = 2;
 
 // ===== 表示する文言（日本語／英語） =====
 // 英語は TRANSLATION.md の対訳表（WTFDIG!? の表記を参考）に合わせる
@@ -13,7 +13,7 @@ const TEXT = {
   ja: {
     pageTitle: '絶妖星乱舞 P4 アシスタント',
     metaDesc: 'FF14 絶妖星乱舞 P4 補助ツール',
-    steps: ['GC①', 'ほ・つ①', 'GC②', 'ほ・つ②', '発動'],
+    steps: ['1回目', '2回目', '発動'],
     real: '真', fake: '偽',
     water: '水', thunder: '雷',
     early: '早', late: '遅',
@@ -33,14 +33,14 @@ const TEXT = {
   en: {
     pageTitle: 'DMU P4 Assistant',
     metaDesc: 'FFXIV Dancing Mad (Ultimate) P4 helper: memorize the debuffs, then follow the resolve timeline',
-    steps: ['NEX 1', 'Chaos 1', 'NEX 2', 'Chaos 2', 'Resolve'],
+    steps: ['Memo 1', 'Memo 2', 'Resolve'],
     real: 'Real', fake: 'Fake',
     water: 'Water', thunder: 'Lightning',
     early: 'Short', late: 'Long',
     accel: 'Accel Bomb',
-    fireBtn: 'Fire', tsunamiBtn: 'Water',
+    fireBtn: 'Entropy', tsunamiBtn: 'Fluid',
     next: 'Next →', back: '← Back', reset: 'Reset', resetConfirm: 'Tap again to reset',
-    lblWT: 'W/L', lblGaze: 'Gaze', lblFire: 'Inferno', lblTsunami: 'Tsunami',
+    lblWT: 'W/L', lblGaze: 'Gaze', lblFire: 'Entropy', lblTsunami: 'Fluid',
     stack: 'Stack', spread: 'Spread',
     stop: 'Stillness', move: 'Motion',
     lookAway: 'Look away', lookAt: 'Look at',
@@ -131,12 +131,12 @@ const elem2Type = () => (state.elem1.type === 'fire' ? 'tsunami' : 'fire');
 function isComplete(screen) {
   const { gc1, elem1, gc2, elem2 } = state;
   switch (screen) {
-    // GC①：真偽を選べば進める。水か雷を選んだときは早遅も必須
-    case 0: return gc1.truth !== null && (!gc1.wt || gc1.timing !== null);
-    case 1: return elem1.truth !== null && elem1.type !== null;
-    // GC①で水雷が付かなかった場合、GC②では水か雷と早遅も必須（水雷はどちらかのGCで必ず付く）
-    case 2: return gc2.truth !== null && (!gc2NeedsWT() || (gc2.wt !== null && gc2.timing !== null));
-    case 3: return elem2.truth !== null;
+    // 1回目：GC①は真偽を選べば進める（水か雷を選んだときは早遅も必須）。ほ・つ①は種類と真偽
+    case 0: return gc1.truth !== null && (!gc1.wt || gc1.timing !== null)
+      && elem1.truth !== null && elem1.type !== null;
+    // 2回目：GC①で水雷が付かなかった場合、GC②では水か雷と早遅も必須（水雷はどちらかのGCで必ず付く）
+    case 1: return gc2.truth !== null && (!gc2NeedsWT() || (gc2.wt !== null && gc2.timing !== null))
+      && elem2.truth !== null;
     default: return true;
   }
 }
@@ -186,6 +186,15 @@ function toggleGC1(item) {
   render();
 }
 
+// ほ・つ①：「ほのお真」などを押すと、種類と真偽を同時に決める
+function setElem1(raw) {
+  const [type, truth] = raw.split(':');
+  state.elem1.type = type;
+  state.elem1.truth = truth === 'true';
+  save();
+  render();
+}
+
 function setLang(next) {
   if (next !== 'ja' && next !== 'en') return;
   lang = next;
@@ -221,6 +230,7 @@ document.addEventListener('click', (e) => {
   if (!btn) return;
   if (btn.dataset.set) setValue(btn.dataset.set, btn.dataset.value);
   else if (btn.dataset.action === 'gc1') toggleGC1(btn.dataset.value);
+  else if (btn.dataset.action === 'elem1') setElem1(btn.dataset.value);
   else if (btn.dataset.action === 'next') { if (isComplete(state.screen)) goTo(state.screen + 1); }
   else if (btn.dataset.action === 'back') goTo(state.screen - 1);
   else if (btn.dataset.action === 'reset') reset(btn);
@@ -278,7 +288,6 @@ function renderGC1() {
       ${wtButton('thunder', wt, 'data-action="gc1"')}
     </div>${timingChoices('gc1.timing', '50', '1m', !!wt)}`)}
     ${group('', `<div class="choices cols-1">${gc1Toggle('accel', accelLabel(), 'accel', accel)}</div>`)}
-    ${nextButton()}
   `;
 }
 
@@ -297,14 +306,6 @@ function nextButton() {
   return `<button type="button" class="btn next" data-action="next"${isComplete(state.screen) ? '' : ' disabled'}>${t('next')}</button>`;
 }
 
-function renderElem1() {
-  return `
-    ${group('', truthChoices('elem1.truth'))}
-    ${group('', `<div class="choices seg">${choice('elem1.type', 'fire', t('fireBtn'), 'fire')}${choice('elem1.type', 'tsunami', t('tsunamiBtn'), 'tsunami')}</div>`)}
-    ${nextButton()}
-  `;
-}
-
 function renderGC2() {
   const needsWT = gc2NeedsWT();
   const hasAccel = gc2HasAccel();
@@ -313,18 +314,35 @@ function renderGC2() {
     ${group('', truthChoices('gc2.truth'))}
     ${needsWT ? group('', `<div class="choices seg divided">${wtButton('water', state.gc2.wt, 'data-set="gc2.wt"')}${wtButton('thunder', state.gc2.wt, 'data-set="gc2.wt"')}</div>${timingChoices('gc2.timing', '35', '59', !!state.gc2.wt)}`) : ''}
     ${hasAccel ? group('', fixedButton(accelLabel(), 'accel')) : ''}
-    ${nextButton()}
   `;
 }
 
-function renderElem2() {
-  const type = elem2Type();
-  return `
-    ${group('', truthChoices('elem2.truth'))}
-    ${group('', fixedButton(t(type === 'fire' ? 'fireBtn' : 'tsunamiBtn'), type))}
-    ${nextButton()}
-  `;
+// ほ・つのボタンの文字：種類を色付きの丸い札にし、後ろに真偽を小さく添える（例：ほのお真）
+const elemLabel = (type, truth) =>
+  `<span class="elem-name elem-${type}">${t(type === 'fire' ? 'fireBtn' : 'tsunamiBtn')}</span><span class="truth-tag">${t(truth ? 'real' : 'fake')}</span>`;
+
+// ほ・つの段：真偽の2択
+const elemBand = (type, buttons) =>
+  `<div class="elem-band"><div class="choices seg divided">${buttons}</div></div>`;
+
+// ほ・つ①：「ほのお真｜ほのお偽」「つなみ真｜つなみ偽」の4つから1つ選ぶ
+function elem1Row(type) {
+  const { type: cur, truth } = state.elem1;
+  return elemBand(type, [true, false].map((v) => {
+    const selected = cur === type && truth === v;
+    return `<button type="button" class="btn c-${v}${selected ? ' sel' : ''}" data-action="elem1" data-value="${type}:${v}" aria-pressed="${selected}">${elemLabel(type, v)}</button>`;
+  }).join(''));
 }
+
+// ほ・つ②：ほ・つ①で選ばなかったほうの真偽だけを選ぶ
+function elem2Row() {
+  const type = elem2Type();
+  return elemBand(type, choice('elem2.truth', true, elemLabel(type, true), 'true') + choice('elem2.truth', false, elemLabel(type, false), 'false'));
+}
+
+// 1回目：GC①＋ほ・つ①　2回目：GC②＋ほ・つ②
+const renderMemo1 = () => `${renderGC1()}<div class="elem-area">${elem1Row('fire')}${elem1Row('tsunami')}</div>${nextButton()}`;
+const renderMemo2 = () => `${renderGC2()}<div class="elem-area">${elem2Row()}</div>${nextButton()}`;
 
 // --- 発動画面 ---
 
@@ -423,7 +441,7 @@ function render() {
   for (let i = 0; i < state.screen; i++) {
     if (!isComplete(i)) { state.screen = i; break; }
   }
-  const screens = [renderGC1, renderElem1, renderGC2, renderElem2, renderExec];
+  const screens = [renderMemo1, renderMemo2, renderExec];
   renderChrome();
   renderSteps();
   app.innerHTML = screens[state.screen]();

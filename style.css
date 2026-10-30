@@ -15,8 +15,11 @@
   --fire: #ff8a3d;
   --tsunami: #38c7d6;
   --accel: #f2c94c;
-  --fire-bg: #3a1f24;
+  --fire-bg: #3f2414; /* 偽ボタン（赤）と見分けやすいよう、少しオレンジ寄り */
   --tsunami-bg: #1c2b40;
+  /* 暗記画面のボタンの「ほのお」「つなみ」の札の色 */
+  --fire-tag: #c8642a;
+  --tsunami-tag: #3a78c8;
 
   /* ボタンの選択・未選択の濃淡 */
   --gray-sel: #4a5060;
@@ -24,8 +27,6 @@
   --true-dim-text: #7cc4a5;
   --false-dim: #3a2224;
   --false-dim-text: #d08a85;
-  --fire-sel: #a8434b;
-  --tsunami-sel: #3a6aa8;
 
   --radius: 8px;
   --inset: 16px; /* 文字だけの部分や結果画面の中身の左右の余白 */
@@ -141,11 +142,17 @@ main,
 .btn.sel.c-true    { background: var(--true);  color: var(--text); }
 .btn.sel.c-false   { background: var(--false); color: var(--text); }
 
-/* ほのお・つなみ：結果画面の赤・青の濃淡 */
-.btn.c-fire          { background: var(--fire-bg);    color: var(--muted); }
-.btn.c-tsunami       { background: var(--tsunami-bg); color: var(--muted); }
-.btn.sel.c-fire      { background: var(--fire-sel);    color: var(--text); }
-.btn.sel.c-tsunami   { background: var(--tsunami-sel); color: var(--text); }
+/* ほ・つ：GCとの間は余白で区切る */
+.elem-area { margin: 32px 0 16px; }
+.elem-band + .elem-band { margin-top: 8px; }
+/* ボタンの中身（色付きの札＋小さい真偽）は上下の中心をそろえる */
+.elem-band .btn { display: flex; align-items: center; justify-content: center; line-height: 1; }
+/* 「ほのお」「つなみ」は、それぞれの色の丸い札にする */
+.elem-name { padding: 4px 10px; border-radius: 999px; color: var(--text); }
+.elem-name.elem-fire    { background: var(--fire-tag); }
+.elem-name.elem-tsunami { background: var(--tsunami-tag); }
+/* ボタンの「真」「偽」はおまけ程度に小さく */
+.truth-tag { font-size: .7em; font-weight: 600; margin-left: 6px; }
 
 /* 水・雷のボタン：アイコンの下に文字 */
 .btn.wt-btn {
