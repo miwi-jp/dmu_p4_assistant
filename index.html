@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- theme-color はリンクカード（Discord など）の色。アドレスバーは app.js でページの背景色に書き換える -->
+  <meta name="theme-color" content="#3b4cc0">
+  <meta name="description" content="FF14 絶妖星乱舞 P4 補助ツール">
+  <title>絶妖星乱舞 P4 アシスタント</title>
+  <link rel="canonical" href="https://miwi-jp.github.io/dmu_p4_assistant/">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+  <!-- OGP（SNSなどに貼ったときのカード）。言語で切り替わらないので日本語と英語を並べる -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="絶妖星乱舞 P4 アシスタント｜DMU P4 Assistant">
+  <meta property="og:title" content="絶妖星乱舞 P4 アシスタント｜DMU P4 Assistant">
+  <meta property="og:description" content="FF14 絶妖星乱舞 P4 補助ツール｜FFXIV Dancing Mad (Ultimate) P4 helper: memorize the debuffs, then follow the resolve timeline">
+  <meta property="og:url" content="https://miwi-jp.github.io/dmu_p4_assistant/">
+  <meta property="og:image" content="https://miwi-jp.github.io/dmu_p4_assistant/ogp.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- ?v= は更新のたびに上げる（ブラウザに古いCSS・JSが残らないようにするため） -->
+  <link rel="stylesheet" href="style.css?v=6">
+  <script src="app.js?v=6" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1 id="site-title">絶妖星乱舞 P4 アシスタント</h1>  </header>
+
+  <nav class="steps" id="steps" aria-label="進行状況"></nav>
+
+  <main id="app"></main>
+
+  <div class="nav-area" id="nav-area"></div>
+
+  <footer class="site-footer">
+    <div class="lang-switch seg divided" id="lang-switch" role="group" aria-label="Language"></div>
+    <p>FINAL FANTASY XIV © SQUARE ENIX</p>
+    <p>Unofficial fan-made tool by Mi Wi</p>
+  </footer>
+</body>
+</html>
