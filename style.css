@@ -17,7 +17,7 @@
   --accel: #f2c94c;
   --fire-bg: #3f2414; /* 偽ボタン（赤）と見分けやすいよう、少しオレンジ寄り */
   --tsunami-bg: #1c2b40;
-  /* 暗記画面のボタンの「ほのお」「つなみ」の札の色 */
+  /* 暗記画面のほのお・つなみの札の色 */
   --fire-tag: #c8642a;
   --tsunami-tag: #3a78c8;
 
@@ -145,14 +145,30 @@ main,
 /* ほ・つ：GCとの間は余白で区切る */
 .elem-area { margin: 32px 0 16px; }
 .elem-band + .elem-band { margin-top: 8px; }
-/* ボタンの中身（色付きの札＋小さい真偽）は上下の中心をそろえる */
-.elem-band .btn { display: flex; align-items: center; justify-content: center; line-height: 1; }
-/* 「ほのお」「つなみ」は、それぞれの色の丸い札にする */
-.elem-name { padding: 4px 10px; border-radius: 999px; color: var(--text); }
-.elem-name.elem-fire    { background: var(--fire-tag); }
-.elem-name.elem-tsunami { background: var(--tsunami-tag); }
-/* ボタンの「真」「偽」はおまけ程度に小さく */
-.truth-tag { font-size: .7em; font-weight: 600; margin-left: 6px; }
+/* 左端の札と真偽の2択を1つのボタンのようにつなげる */
+.elem-band {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.elem-band .seg > .btn { border-radius: 0; }
+/* 札：ほのお・つなみの色に、白いアイコンと小さい種類名 */
+.elem-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 52px;
+  padding: 0 6px;
+  color: #fff;
+  line-height: 1;
+}
+.elem-fire .elem-tag    { background: var(--fire-tag); }
+.elem-tsunami .elem-tag { background: var(--tsunami-tag); }
+.elem-icon { width: 22px; height: 22px; }
+.elem-tag-name { font-size: .6rem; font-weight: 600; }
 
 /* 水・雷のボタン：アイコンの下に文字 */
 .btn.wt-btn {

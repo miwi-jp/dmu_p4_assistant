@@ -317,27 +317,29 @@ function renderGC2() {
   `;
 }
 
-// ほ・つのボタンの文字：種類を色付きの丸い札にし、後ろに真偽を小さく添える（例：ほのお真）
-const elemLabel = (type, truth) =>
-  `<span class="elem-name elem-${type}">${t(type === 'fire' ? 'fireBtn' : 'tsunamiBtn')}</span><span class="truth-tag">${t(truth ? 'real' : 'fake')}</span>`;
+// ほのお・つなみのアイコン（自作のSVG。炎と波）
+const ELEM_ICONS = {
+  fire: '<svg class="elem-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c.9 3.8 6.5 6.6 6.5 12.8A6.5 6.5 0 0 1 5.5 13.8c0-3.1 1.5-5.1 3.3-6.6.2 2.1 1.1 3.4 2.4 4C10.5 7.3 11.3 3.7 12 1z" fill="currentColor"/></svg>',
+  tsunami: '<svg class="elem-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 7.5c2.6 0 2.6-2.2 5.25-2.2S9.4 7.5 12 7.5s2.6-2.2 5.25-2.2 2.6 2.2 5.25 2.2M1.5 13c2.6 0 2.6-2.2 5.25-2.2S9.4 13 12 13s2.6-2.2 5.25-2.2S19.9 13 22.5 13M1.5 18.5c2.6 0 2.6-2.2 5.25-2.2s2.65 2.2 5.25 2.2 2.6-2.2 5.25-2.2 2.6 2.2 5.25 2.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>',
+};
 
-// ほ・つの段：真偽の2択
+// ほ・つの段：左端に色付きの札（アイコン＋小さい種類名）、右に真偽の2択をつなげて並べる
 const elemBand = (type, buttons) =>
-  `<div class="elem-band"><div class="choices seg divided">${buttons}</div></div>`;
+  `<div class="elem-band elem-${type}"><span class="elem-tag">${ELEM_ICONS[type]}<span class="elem-tag-name">${t(type === 'fire' ? 'fireBtn' : 'tsunamiBtn')}</span></span><div class="choices seg divided">${buttons}</div></div>`;
 
 // ほ・つ①：「ほのお真｜ほのお偽」「つなみ真｜つなみ偽」の4つから1つ選ぶ
 function elem1Row(type) {
   const { type: cur, truth } = state.elem1;
   return elemBand(type, [true, false].map((v) => {
     const selected = cur === type && truth === v;
-    return `<button type="button" class="btn c-${v}${selected ? ' sel' : ''}" data-action="elem1" data-value="${type}:${v}" aria-pressed="${selected}">${elemLabel(type, v)}</button>`;
+    return `<button type="button" class="btn c-${v}${selected ? ' sel' : ''}" data-action="elem1" data-value="${type}:${v}" aria-pressed="${selected}">${t(v ? 'real' : 'fake')}</button>`;
   }).join(''));
 }
 
 // ほ・つ②：ほ・つ①で選ばなかったほうの真偽だけを選ぶ
 function elem2Row() {
   const type = elem2Type();
-  return elemBand(type, choice('elem2.truth', true, elemLabel(type, true), 'true') + choice('elem2.truth', false, elemLabel(type, false), 'false'));
+  return elemBand(type, choice('elem2.truth', true, t('real'), 'true') + choice('elem2.truth', false, t('fake'), 'false'));
 }
 
 // 1回目：GC①＋ほ・つ①　2回目：GC②＋ほ・つ②
