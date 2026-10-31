@@ -66,9 +66,9 @@ function detectLang() {
 
 let lang = detectLang();
 
-// 自動送り：初期値はON。切り替えたら覚えておく
-let autoAdvance = true;
-try { autoAdvance = localStorage.getItem(AUTO_KEY) !== 'off'; } catch (e) { /* 読めなければONのまま */ }
+// 自動送り：初期値はOFF。切り替えたら覚えておく
+let autoAdvance = false;
+try { autoAdvance = localStorage.getItem(AUTO_KEY) === 'on'; } catch (e) { /* 読めなければOFFのまま */ }
 const t = (key) => TEXT[lang][key];
 
 // ===== 判定 =====
