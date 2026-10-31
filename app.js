@@ -4,6 +4,7 @@
 
 const STORAGE_KEY = 'dmu-p4-assistant-v3';
 const LANG_KEY = 'dmu-p4-assistant-lang';
+const AUTO_KEY = 'dmu-p4-assistant-auto';
 const EXEC_SCREEN = 2;
 
 // ===== 表示する文言（日本語／英語） =====
@@ -29,6 +30,7 @@ const TEXT = {
     stay: '中のまま', staySub: '（ドーナツ）',
     moAvoid: '踏まない', moBoth: '両方踏む', moThunder: '⚡線踏む', moIce: '⛄扇踏む',
     bar: '線', cone: '扇',
+    autoAdvance: '自動送り',
   },
   en: {
     pageTitle: 'DMU P4 Assistant',
@@ -49,6 +51,7 @@ const TEXT = {
     stay: 'Stay in', staySub: '(Donut)',
     moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak Bar⚡', moIce: 'Soak Cone⛄',
     bar: 'Bar', cone: 'Cone',
+    autoAdvance: 'Auto-advance',
   },
 };
 
@@ -62,6 +65,10 @@ function detectLang() {
 }
 
 let lang = detectLang();
+
+// 自動送り：初期値はON。切り替えたら覚えておく
+let autoAdvance = true;
+try { autoAdvance = localStorage.getItem(AUTO_KEY) !== 'off'; } catch (e) { /* 読めなければONのまま */ }
 const t = (key) => TEXT[lang][key];
 
 // ===== 判定 =====
@@ -170,7 +177,15 @@ function setValue(path, raw) {
   } else {
     state[group][key] = value;
   }
-  // 画面は自動では進めない（すべて「次へ」で進む）
+  if (path === 'elem2.truth') { saveAndAdvance(); return; }
+  save();
+  render();
+}
+
+// ほのお／つなみを押したときだけ、その画面の入力がそろっていれば次へ進む（自動送りON時）
+// グランドクロス → ほのお／つなみ の順に押す想定。先にほのお／つなみを押した場合は「次へ」で進む
+function saveAndAdvance() {
+  if (autoAdvance && isComplete(state.screen)) { goTo(state.screen + 1); return; }
   save();
   render();
 }
@@ -191,14 +206,19 @@ function setElem1(raw) {
   const [type, truth] = raw.split(':');
   state.elem1.type = type;
   state.elem1.truth = truth === 'true';
-  save();
-  render();
+  saveAndAdvance();
 }
 
 function setLang(next) {
   if (next !== 'ja' && next !== 'en') return;
   lang = next;
   try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* 保存できなくても切り替えは行う */ }
+  render();
+}
+
+function toggleAuto() {
+  autoAdvance = !autoAdvance;
+  try { localStorage.setItem(AUTO_KEY, autoAdvance ? 'on' : 'off'); } catch (e) { /* 保存できなくても切り替えは行う */ }
   render();
 }
 
@@ -235,6 +255,7 @@ document.addEventListener('click', (e) => {
   else if (btn.dataset.action === 'back') goTo(state.screen - 1);
   else if (btn.dataset.action === 'reset') reset(btn);
   else if (btn.dataset.action === 'lang') setLang(btn.dataset.value);
+  else if (btn.dataset.action === 'auto') toggleAuto();
 });
 
 // ===== 描画 =====
@@ -420,7 +441,7 @@ function renderExec() {
   `;
 }
 
-// 画面の外枠（タイトル・ページ情報・言語切り替え）を今の言語で描き直す
+// 画面の外枠（タイトル・ページ情報・自動送り・言語切り替え）を今の言語で描き直す
 function renderChrome() {
   document.documentElement.lang = lang;
   document.title = t('pageTitle');
@@ -429,6 +450,8 @@ function renderChrome() {
   document.getElementById('lang-switch').innerHTML = [['ja', '日本語'], ['en', 'English']]
     .map(([code, name]) => `<button type="button" class="btn${lang === code ? ' sel' : ''}" data-action="lang" data-value="${code}" aria-pressed="${lang === code}">${name}</button>`)
     .join('');
+  document.getElementById('auto-switch').innerHTML =
+    `<button type="button" class="switch${autoAdvance ? ' on' : ''}" data-action="auto" role="switch" aria-checked="${autoAdvance}"><i></i>${t('autoAdvance')}</button>`;
 }
 
 function renderSteps() {
