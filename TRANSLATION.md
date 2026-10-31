@@ -42,8 +42,8 @@
 | 早（50／35） | Short | ◎ |  |
 | 遅（1m／59） | Long | ◎ |  |
 | 加速度 | Accel Bomb | ◎ |  |
-| ほのお | Fire | ◎ | Entropy |
-| つなみ | Water | ◎（参考サイトのボタン表記） | Fluid |
+| ほのお | Fire | ◎ | Inferno |
+| つなみ | Water | ◎（参考サイトのボタン表記） | Tsunami |
 | ほのお真・つなみ偽 などの「真」「偽」（小さく添える） | Real／Fake | ◎ |  |
 
 ## 結果画面
@@ -52,14 +52,14 @@
 |---|---|---|---|---|
 | ①④ラベル | 水雷 | W/L | △（「Water/Lightning」はラベル欄に入りきらないため短縮） |  |
 | ②⑤ラベル | 視線 | Gaze | ◎（「Gazes」） |  |
-| ③ラベル | ほのお | Inferno | ◎ | Entropy |
-| ⑥ラベル | つなみ | Tsunami | ◎ | Fluid |
+| ③ラベル | ほのお | Inferno | ◎ | Inferno |
+| ⑥ラベル | つなみ | Tsunami | ◎ | Tsunami |
 | ①④結果 | 頭割り | Stack | ◎ |  |
 | ①④結果 | 散開 | Spread | ◎ |  |
 | ①④結果 | 止まる | Stillness | ◎ |  |
 | ①④結果 | 動く | Motion | ◎ |  |
 | ②⑤結果 | 見ない | Look away | ◎ |  |
-| ②⑤結果 | 見る | Look at | ◎ |  |
+| ②⑤結果 | 見る | Look at | ◎ | Look in |
 | ②④結果・ボタン | 踏まない | Avoid | △ |  |
 | ②④結果・ボタン | 踏む | Soak | △ |  |
 | ③⑥結果 | 外へ（タケノコ） | Out (AOE) | ◎（「Real = AOE/Twister: move out」） |  |
