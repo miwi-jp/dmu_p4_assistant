@@ -6,6 +6,9 @@ const STORAGE_KEY = 'dmu-p4-assistant-v3';
 const LANG_KEY = 'dmu-p4-assistant-lang';
 const AUTO_KEY = 'dmu-p4-assistant-auto';
 const EXEC_SCREEN = 2;
+// 版番号（リリースのたびに書き換える）と変更履歴（GitHub のリリース一覧）
+const APP_VERSION = 'v1.2.0';
+const CHANGELOG_URL = 'https://github.com/miwi-jp/dmu_p4_assistant/releases';
 
 // ===== 表示する文言（日本語／英語） =====
 // 英語は TRANSLATION.md の対訳表（WTFDIG!? の表記を参考）に合わせる
@@ -31,6 +34,7 @@ const TEXT = {
     moAvoid: '踏まない', moBoth: '両方踏む', moThunder: '⚡線踏む', moIce: '⛄扇踏む',
     bar: '線', cone: '扇',
     autoAdvance: '自動送り',
+    changelog: '変更履歴',
   },
   en: {
     pageTitle: 'DMU P4 Assistant',
@@ -52,6 +56,7 @@ const TEXT = {
     moAvoid: 'Avoid both', moBoth: 'Soak both', moThunder: 'Soak Bar⚡', moIce: 'Soak Cone⛄',
     bar: 'Bar', cone: 'Cone',
     autoAdvance: 'Auto-advance',
+    changelog: 'Changelog',
   },
 };
 
@@ -442,15 +447,21 @@ function renderExec() {
   `;
 }
 
-// 画面の外枠（タイトル・ページ情報・自動送り・言語切り替え）を今の言語で描き直す
+// 画面の外枠（タイトル・ページ情報・版番号・自動送り・言語切り替え・変更履歴）を今の言語で描き直す
 function renderChrome() {
   document.documentElement.lang = lang;
   document.title = t('pageTitle');
   document.querySelector('meta[name="description"]').setAttribute('content', t('metaDesc'));
   document.getElementById('site-title').textContent = t('pageTitle');
+  const badge = document.getElementById('version-badge');
+  badge.textContent = APP_VERSION;
+  badge.href = CHANGELOG_URL;
+  badge.title = t('changelog');
   document.getElementById('lang-switch').innerHTML = [['ja', '日本語'], ['en', 'English']]
     .map(([code, name]) => `<button type="button" class="btn${lang === code ? ' sel' : ''}" data-action="lang" data-value="${code}" aria-pressed="${lang === code}">${name}</button>`)
     .join('');
+  document.getElementById('changelog').innerHTML =
+    `${APP_VERSION} ・ <a href="${CHANGELOG_URL}" target="_blank" rel="noopener">${t('changelog')}</a>`;
   document.getElementById('auto-switch').innerHTML =
     `<button type="button" class="switch${autoAdvance ? ' on' : ''}" data-action="auto" role="switch" aria-checked="${autoAdvance}"><i></i>${t('autoAdvance')}</button>`;
 }
