@@ -138,8 +138,8 @@ const elem2Type = () => (state.elem1.type === 'fire' ? 'tsunami' : 'fire');
 function isComplete(screen) {
   const { gc1, elem1, gc2, elem2 } = state;
   switch (screen) {
-    // 1回目：GC①は真偽を選べば進める（水か雷を選んだときは早遅も必須）。ほ・つ①は種類と真偽
-    case 0: return gc1.truth !== null && (!gc1.wt || gc1.timing !== null)
+    // 1回目：GC①は真偽と、水か雷＋早遅／加速度のどちらか一方（水雷と加速度は1回目・2回目に1つずつ付く）。ほ・つ①は種類と真偽
+    case 0: return gc1.truth !== null && ((gc1.wt && gc1.timing !== null) || gc1.accel)
       && elem1.truth !== null && elem1.type !== null;
     // 2回目：GC①で水雷が付かなかった場合、GC②では水か雷と早遅も必須（水雷はどちらかのGCで必ず付く）
     case 1: return gc2.truth !== null && (!gc2NeedsWT() || (gc2.wt !== null && gc2.timing !== null))
@@ -177,28 +177,29 @@ function setValue(path, raw) {
   } else {
     state[group][key] = value;
   }
-  if (path === 'elem2.truth') { saveAndAdvance(); return; }
-  save();
-  render();
+  saveAndAdvance();
 }
 
-// ほのお／つなみを押したときだけ、その画面の入力がそろっていれば次へ進む（自動送りON時）
-// グランドクロス → ほのお／つなみ の順に押す想定。先にほのお／つなみを押した場合は「次へ」で進む
+// 暗記画面では、押した順番に関係なく入力が全部そろった瞬間に次へ進む（自動送りON時）
 function saveAndAdvance() {
-  if (autoAdvance && isComplete(state.screen)) { goTo(state.screen + 1); return; }
+  if (autoAdvance && state.screen < EXEC_SCREEN && isComplete(state.screen)) { goTo(state.screen + 1); return; }
   save();
   render();
 }
 
-// 水と雷はどちらか一方、加速度は水雷と併用可。もう一度押すと解除
+// 水・雷・加速度はどれか1つ（水雷と加速度は同時に付かない）。もう一度押すと解除
 function toggleGC1(item) {
   const gc1 = state.gc1;
-  if (item === 'accel') gc1.accel = !gc1.accel;
-  else gc1.wt = gc1.wt === item ? null : item;
+  if (item === 'accel') {
+    gc1.accel = !gc1.accel;
+    if (gc1.accel) gc1.wt = null;
+  } else {
+    gc1.wt = gc1.wt === item ? null : item;
+    if (gc1.wt) gc1.accel = false;
+  }
   if (!gc1.wt) gc1.timing = null;
   if (gc1.wt) { state.gc2.wt = null; state.gc2.timing = null; }
-  save();
-  render();
+  saveAndAdvance();
 }
 
 // ほ・つ①：「ほのお真」などを押すと、種類と真偽を同時に決める
