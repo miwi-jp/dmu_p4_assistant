@@ -294,6 +294,8 @@ main,
 .emoji-name { font-size: .72rem; vertical-align: 2px; }
 
 /* 加速度は文字色で目立たせる */
+/* 散開は黄色。頭割りは白のまま */
+.wt-spread { color: #ffd84a; }
 .accel-stop { color: #ff6b5f; }
 .accel-move { color: #3fd68a; }
 /* 補足付きで2行になった結果も、上下に他と同じくらいの余白を取る */

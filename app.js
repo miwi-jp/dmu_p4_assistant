@@ -7,7 +7,7 @@ const LANG_KEY = 'dmu-p4-assistant-lang';
 const AUTO_KEY = 'dmu-p4-assistant-auto';
 const EXEC_SCREEN = 2;
 // 版番号（リリースのたびに書き換える）と変更履歴（GitHub のリリース一覧）
-const APP_VERSION = 'v1.2.1';
+const APP_VERSION = 'v1.2.2';
 const CHANGELOG_URL = 'https://github.com/miwi-jp/dmu_p4_assistant/releases';
 
 // ===== 表示する文言（日本語／英語） =====
@@ -81,7 +81,7 @@ const t = (key) => TEXT[lang][key];
 // 水：真→頭割り／偽→散開　雷：真→散開／偽→頭割り
 function judgeWT(kind, truth) {
   const stack = kind === 'water' ? truth : !truth;
-  return stack ? t('stack') : t('spread');
+  return stack ? t('stack') : `<span class="wt-spread">${t('spread')}</span>`;
 }
 
 const judgeAccel = (truth) => (truth ? t('stop') : t('move'));
