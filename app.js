@@ -81,7 +81,7 @@ const t = (key) => TEXT[lang][key];
 // 水：真→頭割り／偽→散開　雷：真→散開／偽→頭割り
 function judgeWT(kind, truth) {
   const stack = kind === 'water' ? truth : !truth;
-  return stack ? t('stack') : t('spread');
+  return stack ? t('stack') : `<span class="wt-spread">${t('spread')}</span>`;
 }
 
 const judgeAccel = (truth) => (truth ? t('stop') : t('move'));
