@@ -7,7 +7,7 @@ const LANG_KEY = 'dmu-p4-assistant-lang';
 const AUTO_KEY = 'dmu-p4-assistant-auto';
 const EXEC_SCREEN = 2;
 // 版番号（リリースのたびに書き換える）と変更履歴（GitHub のリリース一覧）
-const APP_VERSION = 'v1.2.1';
+const APP_VERSION = 'v1.2.2';
 const CHANGELOG_URL = 'https://github.com/miwi-jp/dmu_p4_assistant/releases';
 
 // ===== 表示する文言（日本語／英語） =====
