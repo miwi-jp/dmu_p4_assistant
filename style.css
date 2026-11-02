@@ -66,6 +66,19 @@ main,
 }
 .site-header h1 { font-size: 1.05rem; margin: 0; }
 
+/* 版番号の札（タイトルの右端。押すと変更履歴） */
+.version-badge {
+  margin-left: auto;
+  align-self: center;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .72rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 /* ---------- 進行状況 ---------- */
 /* 文字だけで「GC① › ほ・つ① › …」と並べる */
 .steps {
@@ -316,6 +329,7 @@ main,
   text-align: center;
 }
 .site-footer p { margin: 2px 0; }
+.changelog a { color: inherit; text-underline-offset: 2px; }
 
 /* 言語切り替え（フッターの上に小さく、中央に置く） */
 .lang-switch { display: inline-flex; margin-bottom: 12px; }

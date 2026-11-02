@@ -24,12 +24,15 @@
   <meta property="og:locale:alternate" content="en_US">
   <meta name="twitter:card" content="summary_large_image">
   <!-- ?v= は更新のたびに上げる（ブラウザに古いCSS・JSが残らないようにするため） -->
-  <link rel="stylesheet" href="style.css?v=7">
-  <script src="app.js?v=10" defer></script>
+  <link rel="stylesheet" href="style.css?v=8">
+  <script src="app.js?v=12" defer></script>
 </head>
 <body>
   <header class="site-header">
-    <h1 id="site-title">絶妖星乱舞 P4 アシスタント</h1>  </header>
+    <h1 id="site-title">絶妖星乱舞 P4 アシスタント</h1>
+    <!-- 版番号の札。押すと変更履歴（中身は app.js で入れる） -->
+    <a class="version-badge" id="version-badge" target="_blank" rel="noopener"></a>
+  </header>
 
   <nav class="steps" id="steps" aria-label="進行状況"></nav>
 
@@ -42,6 +45,7 @@
     <div class="lang-switch seg divided" id="lang-switch" role="group" aria-label="Language"></div>
     <p>FINAL FANTASY XIV © SQUARE ENIX</p>
     <p>Unofficial fan-made tool by Mi Wi</p>
+    <p class="changelog" id="changelog"></p>
   </footer>
 </body>
 </html>
